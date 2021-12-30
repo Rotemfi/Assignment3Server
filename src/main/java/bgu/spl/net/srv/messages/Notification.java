@@ -6,28 +6,31 @@ public class Notification extends Message {
     private byte NotificationType;
     private String PostingUser;
     private String content;
-    private boolean first=true;
+    private boolean first = true;
 
-    public Notification(byte[] arr) {
-        super(arr);
+    public Notification(int clientId,byte[] arr) {
+        super(clientId, arr);
     }
 
-//    public void decodeNextByte(byte nextByte) {
-//        if(first) {
-//            NotificationType = popByte();
-//            first=false;
+    public void decodeNextByte(byte nextByte) {
+        if (first) {
+            NotificationType = popByte();
+            first = false;
+        } else {
+            if ((char) (nextByte & 0xFF) == '\0') {
+                if (getCount() == 1)//UserName
+                    PostingUser = popString();
+                else
+                    content = popString();
+            }
+        }
+    }
+
+//    public void process() {
+//        User thisUser = dataBase.getUserByName(clientID);
+//        if(thisUser.isLoggedIn()){
+//            getConnections().send(clientID, msgByteArr);
 //        }
-//        else {
-//            if ((char)(nextByte&0xFF) == '\0') {
-//                if (getCount() == 1)//UserName
-//                    PostingUser = popString();
-//                else
-//                    content = popString();
-//            }
 //    }
-
-    public void encodeNextByte(byte nextByte) {
-        //
-    }
 
 }

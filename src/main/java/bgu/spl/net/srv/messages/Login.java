@@ -34,7 +34,13 @@ public class Login extends Message {
     }
 
     public void process(){
+        if(!dataBase.isRegister(Username)){
+            sendError(2);
+        }
+        User user = dataBase.getUser();
+        user.setLogIn(true);
         //add the user to the login database(update the register to be logged in)
+        sendAck();
     }
 
 }

@@ -46,27 +46,38 @@ public class PM extends Message {
     }
 
     //checks if all conditions OK
-    public void processSend(){
+    public void process(){
         if(isUserReceiverRegister()=false||theSenderFollowReceiver()=false) { //the server should send ERROR
-            return false;
-            sendAck(6);
+            sendError((short) 6);
         }
         byte[] byteMsg = encoder();
         getConnections().send(receiverId, byteMsg);
-        return true; //the server should send ACK
+        sendAck((short) 6);
+
     }
 
+    //create notification
     public byte[] encoder(){
         byte[] contentBytes = content.getBytes(StandardCharsets.UTF_8);
-        byte[] date_Time_Bytes = sending_date_and_time.getBytes(StandardCharsets.UTF_8);
+        byte[] sender_Bytes = Username.getBytes(StandardCharsets.UTF_8);
+
+       short opCode = 9;
+       byte[] opBytes = shortToBytes(opCode);
+       pushByte(opBytes[0]);
+       pushByte(opBytes[1]);
+
+       pushByte((byte)0);//PM message
+
+        for(byte b: sender_Bytes){
+            pushByte(b);
+        }
+        pushByte((byte)'\0');
 
         for(byte b: contentBytes){
             pushByte(b);
         }
-        contentBytes[msgLen] = '\0';
-        for(byte b: date_Time_Bytes){
-            pushByte(b);
-        }
+        pushByte((byte)'\0');
+
         return msgToSend;
     }
 

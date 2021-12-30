@@ -32,16 +32,26 @@ public class Follow extends Message {
     }
 
     public void process(){
-        if(!dataBase.isUserLoggedIn(clientID)){
+        if(!getDatabase().isUserLoggedIn(clientID)){
             sendError((short) 4);
         }
         else{
-            if(!dataBase.isUserRegister(username))
+            if(!getDatabase().isUserRegister(username))
                 sendError((short)4);
             else{
-                User userToFollow = dataBase.getUserByConnectionId(username);
-                User followingUser = dataBase.getUserByConnectionId(clientID);
-                userToFollow.addFollowing(followingUser)
+                User userToFollow = getDatabase().getUserByConnectionId(username);
+                User followingUser = getDatabase().getUserByConnectionId(clientID);
+
+                if(follow == (byte)0) { //FollowAction
+                    userToFollow.addFollowMe(followingUser);
+                    followingUser.addToFollow(userToFollow);
+                    sendAck((short)4);
+                }
+                else{//UnfollowAction
+                    userToFollow.removeFollower(followingUser);
+                    followingUser.removeFromMyFollowList(userToFollow);
+                    sendAck((short)4);
+                }
             }
         }
     }

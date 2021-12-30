@@ -20,8 +20,6 @@ public class ConnectionsImpl<T> implements Connections<T> {
         return ConnectionsHolder.Connections_instance;
     }
 
-    private ConcurrentHashMap<Integer, ConnectionHandler> connectionHandlers;
-
     public ConnectionsImpl(){
         connectionHandlers = new ConcurrentHashMap<>();
     }
@@ -60,4 +58,6 @@ public class ConnectionsImpl<T> implements Connections<T> {
         connectionHandlers.remove(connectionId);
 
     }
+
+
 }

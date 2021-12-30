@@ -16,11 +16,18 @@ public class Message { //abstract?
     protected int clientID;
     private ConnectionsImpl connections;
 
-
     public ConnectionsImpl getConnections() {
         return connections;
     }
 
+    public Message(int clientId, byte[] arr){
+        OP = bytesToShort(arr);
+        bytes = new byte[1 << 10]; // 1KB byte array
+        len = 0;
+        this.clientID=clientID;
+        connections = connections.getInstance();
+
+    }
 
     public boolean isUserNameRegister(String username){
         //checks if the UserName is already in the database
@@ -28,15 +35,6 @@ public class Message { //abstract?
 
     public boolean isUserNameLoggedIn(String username){
         //checks if the UserName is already in the database
-    }
-
-
-    public Message(byte[] arr){
-        OP = bytesToShort(arr);
-        bytes = new byte[1 << 10]; // 1KB byte array
-        len = 0;
-      // this.clientID=clientID;
-        connections = connections.getInstance();
     }
 
     public short bytesToShort(byte[] byteArr)
@@ -49,6 +47,7 @@ public class Message { //abstract?
     public short getOP() {
         return OP;
     }
+
     public void pushByte(byte nextByte) {
         if (len >= partBytes.length)
             partBytes = Arrays.copyOf(partBytes, len * 2);

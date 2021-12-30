@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionsImpl<T> implements Connections<T> {
     private int counter=0;
+    private ConcurrentHashMap<Integer, ConnectionHandler> connectionHandlers;
 
     private static class ConnectionsHolder{
         private static ConnectionsImpl Connections_instance = new ConnectionsImpl();

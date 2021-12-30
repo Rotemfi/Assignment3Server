@@ -16,15 +16,26 @@ public class Message { //abstract?
     protected int clientID;
     private ConnectionsImpl connections;
 
+
     public ConnectionsImpl getConnections() {
         return connections;
     }
 
-    public Message(int clientID, byte[] arr){
+
+    public boolean isUserNameRegister(String username){
+        //checks if the UserName is already in the database
+    }
+
+    public boolean isUserNameLoggedIn(String username){
+        //checks if the UserName is already in the database
+    }
+
+
+    public Message(byte[] arr){
         OP = bytesToShort(arr);
         bytes = new byte[1 << 10]; // 1KB byte array
         len = 0;
-        this.clientID=clientID;
+      // this.clientID=clientID;
         connections = connections.getInstance();
     }
 
@@ -73,8 +84,28 @@ public class Message { //abstract?
         return count;
     }
 
-    public int getClientID(){
+ //   public int getClientID(){
         return clientID;
+    }
+
+    public void sendError(short msgOpCode){
+        short OpCode = 11;
+        byte[] msg = new byte[4];// = {0,11,0,1}
+        msg[0] = shortToBytes(OpCode)[0];
+        msg[1] = shortToBytes(OpCode)[1];
+        msg[2] = shortToBytes(msgOpCode)[0];
+        msg[3] = shortToBytes(msgOpCode)[1];
+        getConnections().send(clientID, msg);
+    }
+
+    public void sendAck(short msgOpCode){
+        short OpCode = 10;
+        byte[] msg = new byte[4];// = {0,10,0,1}
+        msg[0] = shortToBytes(OpCode)[0];
+        msg[1] = shortToBytes(OpCode)[1];
+        msg[2] = shortToBytes(msgOpCode)[0];
+        msg[3] = shortToBytes(msgOpCode)[1];
+        getConnections().send(clientID, msg);
     }
 
 }

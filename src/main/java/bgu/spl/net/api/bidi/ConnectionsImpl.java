@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionsImpl<T> implements Connections<T> {
+    private int counter=0;
 
     private static class ConnectionsHolder{
         private static ConnectionsImpl Connections_instance = new ConnectionsImpl();
@@ -24,9 +25,12 @@ public class ConnectionsImpl<T> implements Connections<T> {
         connectionHandlers = new ConcurrentHashMap<>();
     }
 
-    public void addClient(int connectionId, ConnectionHandler<T> connectionHandler) {
+    public int addClient(ConnectionHandler<T> connectionHandler) {
         //Put if absent instead of put?
+        int connectionId = counter;
+        counter++;
         connectionHandlers.put(connectionId,connectionHandler);
+        return connectionId;
     }
 
     @Override

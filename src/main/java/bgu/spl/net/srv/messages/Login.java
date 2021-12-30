@@ -29,4 +29,12 @@ public class Login extends Message {
         }
     }
 
+    public boolean isPasswordMatch(){
+        //checks if the username matches the password in the database
+    }
+
+    public void process(){
+        //add the user to the login database(update the register to be logged in)
+    }
+
 }

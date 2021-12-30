@@ -31,11 +31,33 @@ public class User {
     }
 
     public void addFollowMe(User user){
+        if (!followers.contains(user))
         followers.add(user);
     }
 
     public void addToFollow(User user){
+        if (!following.contains(user))
         following.add(user);
+    }
+
+    public void addToMessages(byte[] msg){
+        addToMessages(msg);
+    }
+
+    public int getConnectionId(){
+        return connectionId;
+    }
+
+    public short getAge(){
+        return age;
+    }
+
+    public short getFollowers(){
+        return (short)followers.size();
+    }
+
+    public short getFollowing(){
+        return (short)following.size();
     }
 
 }

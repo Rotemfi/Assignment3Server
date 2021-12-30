@@ -1,5 +1,6 @@
 package bgu.spl.net.srv.messages;
 
+import bgu.spl.net.srv.User;
 import bgu.spl.net.srv.messages.Message;
 
 import java.nio.charset.StandardCharsets;
@@ -44,20 +45,42 @@ public class Post extends Message {
     }
 
     public void process(){
-        if (!isUserNameLoggedIn(//METHOD_TO_GET_USERNAME_BY_CLIENT_ID_FROM_DATABASE))
+        if (!(getDatabase().getUserByUserConnectionId(clientID).getLoggedIn()))
                 getConnections().send(clientID,5);
         else{
             LinkedList<String> users = getUsers();
             for (String user : users){
                 byte[] byteMsg = encoder();
-                int connectionId = user.getConnection() // METHOD_FROM_DATABASE
+                User user1 = getDatabase().getUserByUserName(user);
+                int connectionId = user1.getConnectionId();
                 getConnections().send(connectionId, byteMsg);
             }
         }
     }
 
     public byte[] encoder(){
-        //COPY_FROM_PM
+            byte[] contentBytes = content.getBytes(StandardCharsets.UTF_8);
+            byte[] sender_Bytes = username.getBytes(StandardCharsets.UTF_8);
+
+            short opCode = 9;
+            byte[] opBytes = shortToBytes(opCode);
+            pushByte(opBytes[0]);
+            pushByte(opBytes[1]);
+
+            pushByte((byte)0);//Post message
+
+            for(byte b: sender_Bytes){
+                pushByte(b);
+            }
+            pushByte((byte)'\0');
+
+            for(byte b: contentBytes){
+                pushByte(b);
+            }
+            pushByte((byte)'\0');
+
+            return msgToSend;
+        }
     }
 
     public void pushByte(byte nextByte) {

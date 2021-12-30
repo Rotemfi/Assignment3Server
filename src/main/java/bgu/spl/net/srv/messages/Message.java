@@ -14,6 +14,7 @@ public class Message { //abstract?
     private byte[] partBytes;
     private int count=0;
     protected int clientID;
+    protected byte[] msgByteArr;
     private ConnectionsImpl connections;
 
     public ConnectionsImpl getConnections() {
@@ -21,6 +22,7 @@ public class Message { //abstract?
     }
 
     public Message(int clientId, byte[] arr){
+        msgByteArr = arr;
         OP = bytesToShort(arr);
         bytes = new byte[1 << 10]; // 1KB byte array
         len = 0;

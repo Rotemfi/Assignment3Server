@@ -36,24 +36,24 @@ public class PM extends Message {
         //checks in the database if user is register
     }
 
-
     public boolean theSenderFollowReceiver(){
         //check in database if reciever is followed by sender
     }
 
-    public void processReceieve() {
-
-    }
-
     //checks if all conditions OK
     public void process(){
-        if(isUserReceiverRegister()=false||theSenderFollowReceiver()=false) { //the server should send ERROR
+        if(isUserReceiverRegister()==false||theSenderFollowReceiver()==false) { //the server should send ERROR
             sendError((short) 6);
         }
         byte[] byteMsg = encoder();
-        getConnections().send(receiverId, byteMsg);
-        sendAck((short) 6);
-
+        sendAck((short)6);
+        User receiverUser = database.getUserById(receiverId);
+        if(receiverUser.isLoggedIn()){
+            getConnections().send(receiverId, byteMsg);
+        }
+        else{
+            receiverUser.addNotification(byteMsg);
+        }
     }
 
     //create notification

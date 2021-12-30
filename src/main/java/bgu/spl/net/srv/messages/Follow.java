@@ -32,7 +32,18 @@ public class Follow extends Message {
     }
 
     public void process(){
-        //do follow things
+        if(!dataBase.isUserLoggedIn(clientID)){
+            sendError((short) 4);
+        }
+        else{
+            if(!dataBase.isUserRegister(username))
+                sendError((short)4);
+            else{
+                User userToFollow = dataBase.getUserByConnectionId(username);
+                User followingUser = dataBase.getUserByConnectionId(clientID);
+                userToFollow.addFollowing(followingUser)
+            }
+        }
     }
 
     public void sendAck(){

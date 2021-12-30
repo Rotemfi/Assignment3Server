@@ -45,7 +45,7 @@ public class Post extends Message {
 
     public void process(){
         if (!isUserNameLoggedIn(//METHOD_TO_GET_USERNAME_BY_CLIENT_ID_FROM_DATABASE))
-            sendError(5);
+                getConnections().send(clientID,5);
         else{
             LinkedList<String> users = getUsers();
             for (String user : users){

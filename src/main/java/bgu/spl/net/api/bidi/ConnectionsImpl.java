@@ -20,7 +20,7 @@ public class ConnectionsImpl<T> implements Connections<T> {
         return ConnectionsHolder.Connections_instance;
     }
 
-    public ConnectionsImpl(){
+    private ConnectionsImpl(){
         connectionHandlers = new ConcurrentHashMap<>();
     }
 

@@ -1,6 +1,7 @@
 package bgu.spl.net.srv.messages;
 
 import bgu.spl.net.api.bidi.ConnectionsImpl;
+import bgu.spl.net.srv.Database;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -16,10 +17,13 @@ public class Message { //abstract?
     protected int clientID;
     protected byte[] msgByteArr;
     private ConnectionsImpl connections;
+    private Database database;
 
     public ConnectionsImpl getConnections() {
         return connections;
     }
+
+    public Database getDatabase() { return database; }
 
     public Message(int clientId, byte[] arr){
         msgByteArr = arr;
@@ -28,11 +32,12 @@ public class Message { //abstract?
         len = 0;
         this.clientID=clientID;
         connections = connections.getInstance();
+        database = database.getInstance();
 
     }
 
     public boolean isUserNameRegister(String username){
-        //checks if the UserName is already in the database
+        return database.isUserExist(username);
     }
 
     public boolean isUserNameLoggedIn(String username){

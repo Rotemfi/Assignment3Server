@@ -1,6 +1,9 @@
 package bgu.spl.net.srv.messages;
 
 
+import bgu.spl.net.srv.ConnectionHandler;
+import bgu.spl.net.srv.User;
+
 import java.nio.charset.StandardCharsets;
 
 public class Follow extends Message {
@@ -32,25 +35,24 @@ public class Follow extends Message {
     }
 
     public void process(){
-        if(!getDatabase().isUserLoggedIn(clientID)){
-            sendError((short) 4);
-        }
-        else{
-            if(!getDatabase().isUserRegister(username))
-                sendError((short)4);
-            else{
-                User userToFollow = getDatabase().getUserByConnectionId(username);
-                User followingUser = getDatabase().getUserByConnectionId(clientID);
+        if(!getDatabase().isUserExist(username) || !getDatabase().isUserExist(clientID))
+            sendError((short)4);
+        else {
+            User followingUser = getDatabase().getUserByUserConnectionId(clientID);
+            User userToFollow = getDatabase().getUserByUserName(username);
 
-                if(follow == (byte)0) { //FollowAction
+            if (!followingUser.getLoggedIn()) {
+                sendError((short) 4);
+            } else {
+                if (follow == (byte) 0) { //FollowAction
                     userToFollow.addFollowMe(followingUser);
                     followingUser.addToFollow(userToFollow);
-                    sendAck((short)4);
-                }
-                else{//UnfollowAction
+                    sendAck((short) 4);
+
+                } else {//UnfollowAction
                     userToFollow.removeFollower(followingUser);
                     followingUser.removeFromMyFollowList(userToFollow);
-                    sendAck((short)4);
+                    sendAck((short) 4);
                 }
             }
         }

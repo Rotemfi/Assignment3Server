@@ -1,5 +1,6 @@
 package bgu.spl.net.srv.messages;
 
+import bgu.spl.net.srv.User;
 import bgu.spl.net.srv.messages.Message;
 
 import java.nio.charset.StandardCharsets;
@@ -17,7 +18,8 @@ public class PM extends Message {
     public PM(int clientId, byte[] arr) {
         super(clientId, arr);
         //get the reciverId from the database;
-        receiverId = DataBase.getClientId(Username);
+        User user = getDatabase().getUserByUserName(Username);
+        receiverId = user.
     }
 
     public void decodeNextByte(byte nextByte) {
@@ -45,14 +47,15 @@ public class PM extends Message {
         if(isUserReceiverRegister()==false||theSenderFollowReceiver()==false) { //the server should send ERROR
             sendError((short) 6);
         }
-        byte[] byteMsg = encoder();
-        sendAck((short)6);
-        User receiverUser = database.getUserById(receiverId);
-        if(receiverUser.isLoggedIn()){
-            getConnections().send(receiverId, byteMsg);
-        }
-        else{
-            receiverUser.addNotification(byteMsg);
+        else {
+            byte[] byteMsg = encoder();
+            sendAck((short) 6);
+            User receiverUser = getDatabase().getUserByUserConnectionId(receiverId);
+            if (receiverUser.getLoggedIn()) {
+                getConnections().send(receiverId, byteMsg);
+            } else {
+                receiverUser.addToMessages(byteMsg);
+            }
         }
     }
 

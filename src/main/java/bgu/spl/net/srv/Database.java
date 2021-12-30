@@ -27,6 +27,10 @@ public class Database {
         return usersByUserName.containsKey(username);
     }
 
+    public boolean isUserExist(int connectionId){
+        return usersByConnectionId.containsKey(connectionId);
+    }
+
     public User getUserByUserName(String username){
         return usersByUserName.get(username);
     }

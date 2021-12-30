@@ -46,24 +46,18 @@ public class Post extends Message {
     public void process(){
         if (!isUserNameLoggedIn(//METHOD_TO_GET_USERNAME_BY_CLIENT_ID_FROM_DATABASE))
             sendError(5);
-        else if (clientID = )
         else{
             LinkedList<String> users = getUsers();
             for (String user : users){
                 byte[] byteMsg = encoder();
                 int connectionId = user.getConnection() // METHOD_FROM_DATABASE
-                getConnections().send(connectionId, msgToSend);
+                getConnections().send(connectionId, byteMsg);
             }
         }
     }
 
     public byte[] encoder(){
-        byte[] contentBytes = content.getBytes(StandardCharsets.UTF_8);
-        for(byte b: contentBytes){
-            pushByte(b);
-        }
-        contentBytes[msgLen] = '\0';
-        return msgToSend;
+        //COPY_FROM_PM
     }
 
     public void pushByte(byte nextByte) {

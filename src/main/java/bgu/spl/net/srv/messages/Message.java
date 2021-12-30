@@ -41,7 +41,7 @@ public class Message { //abstract?
     }
 
     public boolean isUserNameLoggedIn(String username){
-        //checks if the UserName is already in the database
+        return database.getUserByUserName(username).getLoggedIn();
     }
 
     public short bytesToShort(byte[] byteArr)

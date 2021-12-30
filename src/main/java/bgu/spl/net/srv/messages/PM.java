@@ -19,7 +19,7 @@ public class PM extends Message {
         super(clientId, arr);
         //get the reciverId from the database;
         User user = getDatabase().getUserByUserName(Username);
-        receiverId = user.
+        receiverId = user.getConnectionId();
     }
 
     public void decodeNextByte(byte nextByte) {

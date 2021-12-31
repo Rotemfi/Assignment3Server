@@ -8,7 +8,7 @@ import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-public class Message { //abstract?
+public abstract class Message { //abstract?
     private byte[] bytes;
     private int len;
     private short OP;
@@ -114,4 +114,5 @@ public class Message { //abstract?
         getConnections().send(clientID, msg);
     }
 
+    public abstract void process();
 }

@@ -93,11 +93,11 @@ public class Post extends Message {
             return msgToSend;
         }
 
-    public void pushByte(byte nextByte) {
-        if (msgLen >= msgToSend.length)
-            msgToSend = Arrays.copyOf(msgToSend, msgLen * 2);
-        msgToSend[msgLen] = nextByte;
-        msgLen++;
-    }
+//    public void pushByte(byte nextByte) {
+//        if (msgLen >= msgToSend.length)
+//            msgToSend = Arrays.copyOf(msgToSend, msgLen * 2);
+//        msgToSend[msgLen] = nextByte;
+//        msgLen++;
+//    }
 
 }

@@ -1,9 +1,6 @@
 package bgu.spl.net.srv;
 
-import bgu.spl.net.api.bidi.ConnectionsImpl;
-
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.LinkedBlockingQueue;
 
 public class Database {
     private ConcurrentHashMap<String, User> usersByUserName;
@@ -46,6 +43,10 @@ public class Database {
 
     public void deleteUser(String username){
         User user = usersByUserName.remove(username);
+    }
+
+    public void getMapByUserName(){
+
     }
 
 }

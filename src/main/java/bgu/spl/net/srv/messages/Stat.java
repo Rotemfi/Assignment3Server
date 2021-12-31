@@ -14,8 +14,8 @@ public class Stat extends Message {
     private String listOfUsernames;
     private LinkedList<String> actualListOfUsernames;
 
-    public Stat(byte[] arr) {
-        super(arr);
+    public Stat(int clientId, byte[] arr) {
+        super(clientId, arr);
     }
 
     public void decodeNextByte(byte nextByte) {
@@ -27,9 +27,9 @@ public class Stat extends Message {
 
     public void process(){
         createList();
-        if (!isUserNameLoggedIn(getDatabase().getUserByUserConnectionId(clientID)||
-                !isUserNameRegister(getDatabase().getUserByUserConnectionId(clientID).getUsername())
-                        sendError(5));
+        if (!isUserNameLoggedIn(getDatabase().getUserByUserConnectionId(clientID).getUsername())||
+                !isUserNameRegister(getDatabase().getUserByUserConnectionId(clientID).getUsername()))
+                        sendError((short)8);
         else{
             for (String user : actualListOfUsernames){
                 byte[] byteMsg = encode(user);

@@ -4,6 +4,7 @@ import bgu.spl.net.srv.messages.Message;
 
 import javax.xml.crypto.Data;
 import java.util.LinkedList;
+import java.util.function.LongUnaryOperator;
 
 public class User {
     private String username;
@@ -68,6 +69,14 @@ public class User {
 
     public short getMessagesSize(){
         return (short)messagesSent.size();
+    }
+
+    public LinkedList<User> getFollowing(){
+        return following;
+    }
+
+    public LinkedList<User> getFollowers(){
+        return followers;
     }
 
     public short getFollowingSize(){

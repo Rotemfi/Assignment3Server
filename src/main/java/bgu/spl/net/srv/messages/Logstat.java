@@ -1,5 +1,7 @@
 package bgu.spl.net.srv.messages;
 
+import bgu.spl.net.srv.User;
+
 import java.util.Arrays;
 import java.util.LinkedList;
 
@@ -8,30 +10,30 @@ public class Logstat extends Message {
     private int msgLen = 1<<10;//1KB
     byte[] msgToSend;
 
-    public Logstat(byte[] arr) {
-        super(arr);
+    public Logstat(int clientId, byte[] arr) {
+        super(clientId, arr);
     }
 
     public void process(){
-        LinkedList<User> users = //METHOD_TO_GET_LOGGED_IN_USERS_FROM_DATABASE
-        if (!isUserNameLoggedIn(//METHOD_TO_GET_USERNAME_BY_CLIENT_ID_FROM_DATABASE)||
-                !isUserNameRegister(//) )
-                        sendError(5));
+        if (!isUserNameLoggedIn(getDatabase().getUserByUserConnectionId(clientID).getUsername())||
+                !isUserNameRegister(getDatabase().getUserByUserConnectionId(clientID).getUsername()))
+            sendError((short)7);
         else{
-            for (User user : users){
-                byte[] byteMsg = encode(user);
+            for (User user : getDatabase().ge){
+                byte[] byteMsg = encode(user.getUsername());
                 getConnections().send(clientID, byteMsg);
             }
         }
     }
 
     public byte[] encode(String username){
+        User user = getDatabase().getUserByUserName(username);
         short ackCode = 10;
         short opCode = 7;
-        short age = // DATABASE_FUNCTION_TO_ADD
-        short numPosts = // DATABASE_FUNCTION_TO_ADD
-        short numOfFollowers = // DATABASE_FUNCTION_TO_ADD
-        short numFollowing = // DATABASE_FUNCTION_TO_ADD
+        short age = user.getAge();
+        short numPosts = user.getMessagesSize();
+        short numOfFollowers = user.getFollowersSize();
+        short numFollowing = user.getFollowingSize();
         byte[] opBytes = shortToBytes(opCode);
         byte[] ackBytes = shortToBytes(ackCode);
         byte[] ageBytes = shortToBytes(age);

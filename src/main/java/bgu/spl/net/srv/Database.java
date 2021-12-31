@@ -41,6 +41,14 @@ public class Database {
         usersByUserName.put(username, user);
     }
 
+    public void removeUser(int clientId){
+        User user = usersByConnectionId.get(clientId);
+        if (user != null) {
+            usersByUserName.remove(user);
+            usersByConnectionId.remove(user);
+        }
+    }
+
     public void deleteUser(String username){
         User user = usersByUserName.remove(username);
     }

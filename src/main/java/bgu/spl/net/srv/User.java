@@ -18,6 +18,7 @@ public class User {
     private LinkedList<byte[]> messagesSent;
     private LinkedList<User> blockedBy;
     private LinkedList<User> amBlocking;
+    private LinkedList<byte[]> notifciationList;
 
     public String getPassword() {
         return password;
@@ -29,6 +30,12 @@ public class User {
         this.age = age;
         loggedIn = false;
         this.connectionId = connectionId;
+        following = new LinkedList<>();
+        followers = new LinkedList<>();
+        messagesSent = new LinkedList<>();
+        blockedBy = new LinkedList<>();
+        amBlocking = new LinkedList<>();
+        notifciationList = new LinkedList<>();
     }
 
     public void setLoggedIn(boolean bool){
@@ -116,6 +123,14 @@ public class User {
 
     private void removeFollower(User user){
         this.followers.remove(user);
+    }
+
+    private void addNotification(byte[] notification){
+        notifciationList.add(notification);
+    }
+
+    private LinkedList<byte[]> getNotificationsList(){
+        return notifciationList;
     }
 
 }

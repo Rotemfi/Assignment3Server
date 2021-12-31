@@ -125,11 +125,11 @@ public class User {
         this.followers.remove(user);
     }
 
-    private void addNotification(byte[] notification){
+    public void addNotification(byte[] notification){
         notifciationList.add(notification);
     }
 
-    private LinkedList<byte[]> getNotificationsList(){
+    public LinkedList<byte[]> getNotificationsList(){
         return notifciationList;
     }
 

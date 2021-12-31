@@ -53,7 +53,6 @@ public class Follow extends Message {
 
                 } else {//UnfollowAction
                     userToFollow.removeFollower(followingUser);
-                    followingUser.removeFromMyFollowList(userToFollow);
                     sendAck((short) 4);
                 }
             }

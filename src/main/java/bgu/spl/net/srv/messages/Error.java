@@ -6,8 +6,8 @@ public class Error extends Message {
 
     private String listOfUsernames;
 
-    public Error(byte[] arr) {
-        super(arr);
+    public Error(int clientId, byte[] arr) {
+        super(clientId, arr);
     }
 
     public byte[] encode(){

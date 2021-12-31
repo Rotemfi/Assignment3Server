@@ -35,11 +35,11 @@ public class PM extends Message {
     }
 
     public boolean isUserReceiverRegister(){
-        //checks in the database if user is register
+        return getDatabase().isUserExist(receiverId);
     }
 
     public boolean theSenderFollowReceiver(){
-        //check in database if reciever is followed by sender
+        return getDatabase().isUserExist(clientID);
     }
 
     //checks if all conditions OK

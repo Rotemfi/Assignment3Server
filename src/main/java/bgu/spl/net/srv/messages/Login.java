@@ -11,8 +11,8 @@ public class Login extends Message {
     private byte Captcha;
     private boolean byteTime=false;
 
-    public Login(byte[] arr) {
-        super(arr);
+    public Login(int clientId, byte[] arr) {
+        super(clientId, arr);
     }
 
     public void decodeNextByte(byte nextByte) {
@@ -37,7 +37,7 @@ public class Login extends Message {
     }
 
     public void process(){
-        if(!dataBase.isRegister(Username)){
+        if(!getDatabase().isUserExist(Username)){
             sendError((short) 2);
         }
         else {
@@ -48,8 +48,8 @@ public class Login extends Message {
                 user.setLoggedIn(true);
                 //add the user to the login database(update the register to be logged in)
                 sendAck((short) 2);
-                while(!user.getNotificationQueue().isEmpty()) {
-                    byte[] notificationToSend = user.getNotificationQueue.pull();
+                while(!user.getNotificationList().isEmpty()) {
+                    byte[] notificationToSend = user.getNotificationList.pull();
                     getConnections().send(clientID,notificationToSend);
                 }
             }

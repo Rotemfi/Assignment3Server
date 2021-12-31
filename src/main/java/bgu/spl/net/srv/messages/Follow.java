@@ -47,12 +47,11 @@ public class Follow extends Message {
                 sendError((short) 4);
             } else {
                 if (follow == (byte) 0) { //FollowAction
-                    userToFollow.addFollowMe(followingUser);
                     followingUser.addToFollow(userToFollow);
                     sendAck((short) 4);
 
                 } else {//UnfollowAction
-                    userToFollow.removeFollower(followingUser);
+                    userToFollow.removeFollowing(followingUser);
                     sendAck((short) 4);
                 }
             }

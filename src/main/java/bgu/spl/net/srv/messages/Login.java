@@ -1,5 +1,6 @@
 package bgu.spl.net.srv.messages;
 
+import bgu.spl.net.srv.User;
 import bgu.spl.net.srv.messages.Message;
 
 import java.security.KeyPair;
@@ -40,11 +41,11 @@ public class Login extends Message {
             sendError((short) 2);
         }
         else {
-            User user = dataBase.getUser(Username);
+            User user = getDatabase().getUserByUserName(Username);
             if(user.getPassword()!=Password)
                 sendError((short) 2);
             else {
-                user.setLogIn(true);
+                user.setLoggedIn(true);
                 //add the user to the login database(update the register to be logged in)
                 sendAck((short) 2);
                 while(!user.getNotificationQueue().isEmpty()) {

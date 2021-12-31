@@ -17,14 +17,9 @@ public class Block extends Message{
         else{
             User thisUser = getDatabase().getUserByUserConnectionId(clientID);
             User toBlock = getDatabase().getUserByUserName(username);
-            LinkedList<User> whoAmBlocking = thisUser.getAmBlocking();
-            LinkedList<User> whoBlockedOther = thisUser.getAmBlocking();
-            if(!whoAmBlocking.contains(toBlock)) {
-                thisUser.addToAmBlocking(toBlock);
-                thisUser.removeFollower(toBlock);
 
-            if (!whoBlockedOther.contains(thisUser))
-                thisUser.addToBlockedBy(thisUser);
+            thisUser.addToAmBlocking(toBlock);
+            thisUser.removeFollowing(toBlock);
 
         }
     }

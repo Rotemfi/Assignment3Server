@@ -8,6 +8,7 @@ import java.util.function.LongUnaryOperator;
 
 public class User {
     private String username;
+    private String password;
     private short age;
     private boolean loggedIn;
     private Database database;
@@ -18,8 +19,13 @@ public class User {
     private LinkedList<User> blockedBy;
     private LinkedList<User> amBlocking;
 
-    public User(String username, short age, int connectionId){
+    public String getPassword() {
+        return password;
+    }
+
+    public User(String username, String password, short age, int connectionId){
         this.username = username;
+        this.password=password;
         this.age = age;
         loggedIn = false;
         this.connectionId = connectionId;
@@ -33,28 +39,35 @@ public class User {
         return loggedIn;
     }
 
-    public void addFollowMe(User user){
-        if (!followers.contains(user))
+    private void addFollowMe(User user) {
         followers.add(user);
     }
 
     public void addToFollow(User user){
         if (!following.contains(user))
-        following.add(user);
+            following.add(user);
+        if (!user.getFollowers().contains(this))
+            user.addFollowMe(user);
     }
 
     public void addToMessages(byte[] msg){
         addToMessages(msg);
     }
 
-    public void addToBlockedBy(User user){
-        blockedBy.add(user);
-    }
-
     public void addToAmBlocking(User user){
-        user.addToAmBlocking(this);
-    }
+        if(!this.getAmBlocking().contains(user)){
+            this.amBlocking.add(user);
+            this.removeFollowing(user);
+        }
+        if(!user.getBlockedBy().contains(this)) {
+            user.addBlockingMe(this);
+            user.removeFollowing(this);
+        }
 
+    }
+    public LinkedList<User> getAmBlocking(){
+        return amBlocking;
+    }
     public int getConnectionId(){
         return connectionId;
     }
@@ -83,21 +96,26 @@ public class User {
         return (short)following.size();
     }
 
-    public LinkedList<User> getAmBlocking(){
-        return amBlocking;
-    }
 
     public LinkedList<User> getBlockedBy(){
         return blockedBy;
+    }
+
+    private void addBlockingMe(User user) {
+        blockedBy.add(user);
     }
 
     public String getUsername(){
         return this.username;
     }
 
-    public void removeFollower(User user){
-        user.followers.remove(this);
+    public void removeFollowing(User user){
         this.following.remove(user);
+        user.removeFollower(this);
+    }
+
+    private void removeFollower(User user){
+        this.followers.remove(user);
     }
 
 }

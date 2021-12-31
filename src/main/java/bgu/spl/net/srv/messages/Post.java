@@ -13,8 +13,8 @@ public class Post extends Message {
     private int msgLen = 1<<10;//1KB
     byte[] msgToSend;
 
-    public Post(byte[] arr) {
-        super(arr);
+    public Post(int clientId, byte[] arr) {
+        super(clientId, arr);
     }
 
     public void decodeNextByte(byte nextByte) {
@@ -60,7 +60,9 @@ public class Post extends Message {
 
     public byte[] encoder(){
             byte[] contentBytes = content.getBytes(StandardCharsets.UTF_8);
-            byte[] sender_Bytes = username.getBytes(StandardCharsets.UTF_8);
+            User thisClientId = getDatabase().getUserByUserConnectionId(clientID);
+            String thisUserName = thisClientId.getUsername();
+            byte[] sender_Bytes = thisUserName.getBytes(StandardCharsets.UTF_8);
 
             short opCode = 9;
             byte[] opBytes = shortToBytes(opCode);
@@ -81,7 +83,6 @@ public class Post extends Message {
 
             return msgToSend;
         }
-    }
 
     public void pushByte(byte nextByte) {
         if (msgLen >= msgToSend.length)

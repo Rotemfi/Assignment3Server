@@ -60,4 +60,8 @@ public class User {
         return (short)following.size();
     }
 
+    public String getUsername(){
+        return this.username;
+    }
+
 }

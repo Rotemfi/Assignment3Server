@@ -91,8 +91,8 @@ public class Message { //abstract?
     }
 
  //   public int getClientID(){
-        return clientID;
-    }
+//        return clientID;
+//    }
 
     public void sendError(short msgOpCode){
         short OpCode = 11;

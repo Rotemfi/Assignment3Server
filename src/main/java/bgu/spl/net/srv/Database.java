@@ -45,8 +45,8 @@ public class Database {
         User user = usersByUserName.remove(username);
     }
 
-    public void getMapByUserName(){
-
+    public ConcurrentHashMap<String, User> getMapByUserName(){
+        return usersByUserName;
     }
 
 }

@@ -19,9 +19,10 @@ public class Logstat extends Message {
                 !isUserNameRegister(getDatabase().getUserByUserConnectionId(clientID).getUsername()))
             sendError((short)7);
         else{
-            for (User user : getDatabase().ge){
+            for (User user : getDatabase().getMapByUserName().values()){
+                if (!user.getBlockedBy().contains(getDatabase().getUserByUserConnectionId(clientID))){
                 byte[] byteMsg = encode(user.getUsername());
-                getConnections().send(clientID, byteMsg);
+                getConnections().send(clientID, byteMsg);}
             }
         }
     }
@@ -69,4 +70,3 @@ public class Logstat extends Message {
     }
 }
 
-}

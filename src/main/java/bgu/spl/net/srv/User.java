@@ -97,9 +97,6 @@ public class User {
 
     public void removeFollower(User user){
         user.followers.remove(this);
-    }
-
-    public void removeFromMyFollowList(User user){
         this.following.remove(user);
     }
 

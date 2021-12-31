@@ -32,8 +32,11 @@ public class Stat extends Message {
                         sendError((short)8);
         else{
             for (String user : actualListOfUsernames){
-                byte[] byteMsg = encode(user);
-                getConnections().send(clientID, byteMsg);
+                User user1 = getDatabase().getUserByUserName(user);
+                if(!user1.getBlockedBy().contains(getDatabase().getUserByUserConnectionId(clientID))) {
+                    byte[] byteMsg = encode(user);
+                    getConnections().send(clientID, byteMsg);
+                }
             }
         }
     }

@@ -46,14 +46,23 @@ public class Post extends Message {
 
     public void process(){
         if (!(getDatabase().getUserByUserConnectionId(clientID).getLoggedIn()))
-                getConnections().send(clientID,5);
+                sendError((short)5);
         else{
-            LinkedList<String> users = getUsers();
-            for (String user : users){
-                byte[] byteMsg = encoder();
+            LinkedList<User> followersUsers = getDatabase().getUserByUserConnectionId(clientID).getFollowers();
+            for (User user : followersUsers) {
+                    byte[] byteMsg = encoder();
+                    int connectionId = user.getConnectionId();
+                    getConnections().send(connectionId, byteMsg);
+            }
+            LinkedList<String> taggedUsers = getUsers();
+            for (String user : taggedUsers){
                 User user1 = getDatabase().getUserByUserName(user);
-                int connectionId = user1.getConnectionId();
-                getConnections().send(connectionId, byteMsg);
+                if (!user1.getBlockedBy().contains(getDatabase().getUserByUserConnectionId(clientID))
+                        && !user1.getFollowing().contains(getDatabase().getUserByUserConnectionId(clientID))) {
+                    byte[] byteMsg = encoder();
+                    int connectionId = user1.getConnectionId();
+                    getConnections().send(connectionId, byteMsg);
+                }
             }
         }
     }

@@ -19,7 +19,7 @@ public class PM extends Message {
         super(clientId, arr);
         //get the reciverId from the database;
         User user = getDatabase().getUserByUserName(Username);
-        receiverId = user.
+        receiverId = user.getConnectionId();
     }
 
     public void decodeNextByte(byte nextByte) {
@@ -62,7 +62,9 @@ public class PM extends Message {
     //create notification
     public byte[] encoder(){
         byte[] contentBytes = content.getBytes(StandardCharsets.UTF_8);
-        byte[] sender_Bytes = Username.getBytes(StandardCharsets.UTF_8);
+        User thisClientId = getDatabase().getUserByUserConnectionId(clientID);
+        String thisUserName = thisClientId.getUsername();
+        byte[] sender_Bytes = thisUserName.getBytes(StandardCharsets.UTF_8);
 
        short opCode = 9;
        byte[] opBytes = shortToBytes(opCode);

@@ -14,6 +14,8 @@ public class User {
     private LinkedList<User> followers;
     private LinkedList<User> following;
     private LinkedList<byte[]> messagesSent;
+    private LinkedList<User> blockedBy;
+    private LinkedList<User> amBlocking;
 
     public User(String username, short age, int connectionId){
         this.username = username;
@@ -44,6 +46,14 @@ public class User {
         addToMessages(msg);
     }
 
+    public void addToBlockedBy(User user){
+        blockedBy.add(user);
+    }
+
+    public void addToAmBlocking(User user){
+        user.addToAmBlocking(this);
+    }
+
     public int getConnectionId(){
         return connectionId;
     }
@@ -52,12 +62,24 @@ public class User {
         return age;
     }
 
-    public short getFollowers(){
+    public short getFollowersSize(){
         return (short)followers.size();
     }
 
-    public short getFollowing(){
+    public short getMessagesSize(){
+        return (short)messagesSent.size();
+    }
+
+    public short getFollowingSize(){
         return (short)following.size();
+    }
+
+    public LinkedList<User> getAmBlocking(){
+        return amBlocking;
+    }
+
+    public LinkedList<User> getBlockedBy(){
+        return blockedBy;
     }
 
     public String getUsername(){

@@ -1,5 +1,6 @@
 package bgu.spl.net.srv.messages;
 
+import bgu.spl.net.srv.User;
 import bgu.spl.net.srv.messages.Message;
 
 import java.nio.charset.StandardCharsets;
@@ -26,8 +27,8 @@ public class Stat extends Message {
 
     public void process(){
         createList();
-        if (!isUserNameLoggedIn(//METHOD_TO_GET_USERNAME_BY_CLIENT_ID_FROM_DATABASE)||
-                !isUserNameRegister(//) )
+        if (!isUserNameLoggedIn(getDatabase().getUserByUserConnectionId(clientID)||
+                !isUserNameRegister(getDatabase().getUserByUserConnectionId(clientID).getUsername())
                         sendError(5));
         else{
             for (String user : actualListOfUsernames){
@@ -38,12 +39,13 @@ public class Stat extends Message {
     }
 
     public byte[] encode(String username){
+            User user = getDatabase().getUserByUserName(username);
             short ackCode = 10;
             short opCode = 8;
-            short age = // DATABASE_FUNCTION_TO_ADD
-            short numPosts = // DATABASE_FUNCTION_TO_ADD
-            short numOfFollowers = // DATABASE_FUNCTION_TO_ADD
-            short numFollowing = // DATABASE_FUNCTION_TO_ADD
+            short age = user.getAge();
+            short numPosts = user.getMessagesSize();
+            short numOfFollowers = user.getFollowersSize();
+            short numFollowing = user.getFollowingSize();
             byte[] opBytes = shortToBytes(opCode);
             byte[] ackBytes = shortToBytes(ackCode);
             byte[] ageBytes = shortToBytes(age);

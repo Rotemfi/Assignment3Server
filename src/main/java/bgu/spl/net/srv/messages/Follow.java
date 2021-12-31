@@ -4,6 +4,8 @@ package bgu.spl.net.srv.messages;
 import bgu.spl.net.srv.ConnectionHandler;
 import bgu.spl.net.srv.User;
 
+import bgu.spl.net.srv.User;
+
 import java.nio.charset.StandardCharsets;
 
 public class Follow extends Message {
@@ -12,8 +14,8 @@ public class Follow extends Message {
     private String username;
     boolean first=true;
 
-    public Follow(byte[] arr) {
-        super(arr);
+    public Follow(int connectionId, byte[] arr) {
+        super(connectionId, arr);
     }
 
     public void decodeNextByte(byte nextByte) {

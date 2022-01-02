@@ -13,8 +13,8 @@ public class Post extends Message {
     private int msgLen = 1<<10;//1KB
     byte[] msgToSend;
 
-    public Post(int clientId, byte[] arr) {
-        super(clientId, arr);
+    public Post(int clientId) {
+        super(clientId);
     }
 
     public void decodeNextByte(byte nextByte) {

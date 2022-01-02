@@ -1,9 +1,10 @@
 package bgu.spl.net.srv;
 
-import bgu.spl.net.api.MessageEncoderDecoder;
-import bgu.spl.net.api.MessagingProtocol;
+import bgu.spl.net.api.MessageEncoderDecoderImpl;
+import bgu.spl.net.api.bidi.BidiMessagingProtocolImpl;
+import bgu.spl.net.api.bidi.ConnectionsImpl;
+import bgu.spl.net.srv.messages.*;
 
-import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
@@ -16,15 +17,15 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
     private static final int BUFFER_ALLOCATION_SIZE = 1 << 13; //8k
     private static final ConcurrentLinkedQueue<ByteBuffer> BUFFER_POOL = new ConcurrentLinkedQueue<>();
 
-    private final MessagingProtocol<T> protocol;
-    private final MessageEncoderDecoder<T> encdec;
+    private final BidiMessagingProtocolImpl<Message> protocol;
+    private final MessageEncoderDecoderImpl<T> encdec;
     private final Queue<ByteBuffer> writeQueue = new ConcurrentLinkedQueue<>();
     private final SocketChannel chan;
     private final Reactor reactor;
 
     public NonBlockingConnectionHandler(
-            MessageEncoderDecoder<T> reader,
-            MessagingProtocol<T> protocol,
+            MessageEncoderDecoderImpl<T> reader,
+            BidiMessagingProtocolImpl<Message> protocol,
             SocketChannel chan,
             Reactor reactor) {
         this.chan = chan;
@@ -47,13 +48,44 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
             buf.flip();
             return () -> {
                 try {
+                    boolean doneOP=false;
+                    short OP;
+                    Message message = new Register(1);//
+                    ConnectionsImpl connections = ConnectionsImpl.getInstance();
+                    int clientId = connections.getIdByHandler(this);
+
                     while (buf.hasRemaining()) {
-                        T nextMessage = encdec.decodeNextByte(buf.get());
-                        if (nextMessage != null) {
-                            T response = protocol.process(nextMessage);
-                            if (response != null) {
-                                writeQueue.add(ByteBuffer.wrap(encdec.encode(response)));
-                                reactor.updateInterestedOps(chan, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+                        if(!doneOP){
+                            OP = encdec.decodeOp(buf.get());
+                            if(OP!=0) {
+                                doneOP = true;
+                                switch (OP){
+                                    case 1:
+                                        message = new Register(clientId);
+                                    case 2:
+                                        message = new Login(clientId);
+                                    case 3:
+                                        message = new Logout(clientId);
+                                    case 4:
+                                        message = new Follow(clientId);
+                                    case 5:
+                                        message = new Post(clientId);
+                                    case 6:
+                                        message = new PM(clientId);
+                                    case 7:
+                                        message = new Logstat(clientId);
+                                    case 8:
+                                        message = new Stat(clientId);
+                                    case 12:
+                                        message = new Block(clientId);
+
+                                }
+                            }
+                        }
+                        else {
+                            int done = message.decodeNextByte(buf.get());
+                            if (done != 0) {//we decode all the line
+                                protocol.process(message);
                             }
                         }
                     }
@@ -121,5 +153,6 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
     //sends to his own client
     public void send(T msg) {
         writeQueue.add(ByteBuffer.wrap(encdec.encode(msg)));
+        reactor.updateInterestedOps(chan, SelectionKey.OP_READ | SelectionKey.OP_WRITE);
     }
 }

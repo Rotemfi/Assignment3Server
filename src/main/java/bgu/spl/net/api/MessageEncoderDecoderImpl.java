@@ -1,29 +1,32 @@
 package bgu.spl.net.api;
 
-public class MessageEncoderDecoderImpl implements MessageEncoderDecoder{
+import bgu.spl.net.srv.messages.Login;
+import bgu.spl.net.srv.messages.Register;
+
+public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder<Message>{
     boolean first=false;
     boolean second=false;
     byte[] opCode = new byte[2];
 
+
     @Override
-    public Object decodeNextByte(byte nextByte) {
-        if(first==false){
-            opCode[0]=nextByte;
-            first=true;
-        }
-        else {
+    public Message decodeNextByte(byte nextByte) {
+        return null;
+    }
+
+    public short decodeOp(byte b) {
+        if (first == false) {
+            opCode[0] = b;
+            first = true;
+        } else {
             if (second == false) {
-                opCode[1] = nextByte;
+                opCode[1] = b;
                 second = true;
-            } else{//its not the first 2 bytes
-                short opCode1 = bytesToShort(opCode);
-
-
-                if (nextByte == (byte) ';')
-                    process();
-            return null;
+                short ans = bytesToShort(opCode);
+                return ans;
+            }
         }
-        }
+        return 0;
     }
 
     public short bytesToShort(byte[] byteArr)

@@ -10,8 +10,8 @@ public class Logstat extends Message {
     private int msgLen = 1<<10;//1KB
     byte[] msgToSend;
 
-    public Logstat(int clientId, byte[] arr) {
-        super(clientId, arr);
+    public Logstat(int clientId) {
+        super(clientId);
     }
 
     public void process(){

@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ConnectionsImpl<T> implements Connections<T> {
     private int counter=0;
     private ConcurrentHashMap<Integer, ConnectionHandler> connectionHandlers;
+    private ConcurrentHashMap<ConnectionHandler, Integer> clientsId;
 
     private static class ConnectionsHolder{
         private static ConnectionsImpl Connections_instance = new ConnectionsImpl();
@@ -22,6 +23,7 @@ public class ConnectionsImpl<T> implements Connections<T> {
 
     private ConnectionsImpl(){
         connectionHandlers = new ConcurrentHashMap<>();
+        clientsId = new ConcurrentHashMap<>();
     }
 
     public int addClient(ConnectionHandler<T> connectionHandler) {
@@ -29,6 +31,7 @@ public class ConnectionsImpl<T> implements Connections<T> {
         int connectionId = counter;
         counter++;
         connectionHandlers.put(connectionId,connectionHandler);
+        clientsId.put(connectionHandler,connectionId);
         return connectionId;
     }
 
@@ -57,6 +60,10 @@ public class ConnectionsImpl<T> implements Connections<T> {
     public void disconnect(int connectionId) {
         connectionHandlers.remove(connectionId);
 
+    }
+
+    public int getIdByHandler(ConnectionHandler ch){
+        return clientsId.get(ch);
     }
 
 

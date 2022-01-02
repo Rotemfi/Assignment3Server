@@ -15,8 +15,8 @@ public class PM extends Message {
     private int msgLen = 1<<10;//1KB
     byte[] msgToSend;
 
-    public PM(int clientId, byte[] arr) {
-        super(clientId, arr);
+    public PM(int clientId) {
+        super(clientId);
         //get the reciverId from the database;
         User user = getDatabase().getUserByUserName(Username);
         receiverId = user.getConnectionId();
@@ -43,6 +43,7 @@ public class PM extends Message {
     }
 
     //checks if all conditions OK
+    TO ADD CHECKS FOR BLOCKING
     public void process(){
         if(isUserReceiverRegister()==false||theSenderFollowReceiver()==false) { //the server should send ERROR
             sendError((short) 6);

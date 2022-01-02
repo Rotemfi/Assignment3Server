@@ -12,8 +12,8 @@ public class Register extends Message {
     private String birthday;
 
 
-    public Register(int clientId , byte[] arr) {
-        super(clientId, arr);
+    public Register(int clientId) {
+        super(clientId);
        // clientID = getConnections().addClient(new ConnectionHandler<T>);
     }
 

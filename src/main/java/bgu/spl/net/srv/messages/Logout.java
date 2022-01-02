@@ -5,8 +5,8 @@ import bgu.spl.net.srv.User;
 public class Logout extends Message{
     private boolean logOutSucceeded=false;
 
-    public Logout(int clientId, byte[] arr) {
-        super(clientId, arr);
+    public Logout(int clientId) {
+        super(clientId);
     }
 
     public boolean logoutSucceeded(){

@@ -7,8 +7,8 @@ import java.util.LinkedList;
 public class Block extends Message{
     private String username;
 
-    public Block(int clientId, byte[] arr) {
-        super(clientId, arr);
+    public Block(int clientId) {
+        super(clientId);
     }
 
     public void process(){

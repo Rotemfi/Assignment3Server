@@ -8,8 +8,8 @@ public class Notification extends Message {
     private String content;
     private boolean first = true;
 
-    public Notification(int clientId,byte[] arr) {
-        super(clientId, arr);
+    public Notification(int clientId) {
+        super(clientId);
     }
 
     public void decodeNextByte(byte nextByte) {
@@ -26,11 +26,11 @@ public class Notification extends Message {
         }
     }
 
-//    public void process() {
-//        User thisUser = dataBase.getUserByName(clientID);
-//        if(thisUser.isLoggedIn()){
-//            getConnections().send(clientID, msgByteArr);
-//        }
-//    }
+    public void process() {
+        User thisUser = dataBase.getUserByName(clientID);
+        if(thisUser.isLoggedIn()){
+            getConnections().send(clientID, msgByteArr);
+        }
+    }
 
 }

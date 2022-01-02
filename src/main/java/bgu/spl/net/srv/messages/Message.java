@@ -11,11 +11,10 @@ import java.util.Arrays;
 public abstract class Message { //abstract?
     private byte[] bytes;
     private int len;
-    private short OP;
     private byte[] partBytes;
     private int count=0;
     protected int clientID;
-    protected byte[] msgByteArr;
+  //  protected byte[] msgByteArr;
     private ConnectionsImpl connections;
     private Database database;
 
@@ -25,9 +24,9 @@ public abstract class Message { //abstract?
 
     public Database getDatabase() { return database; }
 
-    public Message(int clientId, byte[] arr){
-        msgByteArr = arr;
-        OP = bytesToShort(arr);
+    public Message(int clientId){
+       // msgByteArr = arr;
+       // OP = bytesToShort(arr);
         bytes = new byte[1 << 10]; // 1KB byte array
         len = 0;
         this.clientID=clientID;
@@ -51,9 +50,6 @@ public abstract class Message { //abstract?
         return result;
     }
 
-    public short getOP() {
-        return OP;
-    }
 
     public void pushByte(byte nextByte) {
         if (len >= partBytes.length)
@@ -115,4 +111,6 @@ public abstract class Message { //abstract?
     }
 
     public abstract void process();
+
+    public abstract int decodeNextByte(byte b);
 }

@@ -14,8 +14,8 @@ public class Stat extends Message {
     private String listOfUsernames;
     private LinkedList<String> actualListOfUsernames;
 
-    public Stat(int clientId, byte[] arr) {
-        super(clientId, arr);
+    public Stat(int clientId) {
+        super(clientId);
     }
 
     public void decodeNextByte(byte nextByte) {

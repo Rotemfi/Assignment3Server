@@ -14,11 +14,11 @@ public class Follow extends Message {
     private String username;
     boolean first=true;
 
-    public Follow(int connectionId, byte[] arr) {
-        super(connectionId, arr);
+    public Follow(int connectionId) {
+        super(connectionId);
     }
 
-    public void decodeNextByte(byte nextByte) {
+    public int decodeNextByte(byte nextByte) {
         if(first) {
             follow = popByte();
             first=false;
@@ -26,10 +26,12 @@ public class Follow extends Message {
         else {
             if ((char) (nextByte & 0xFF) == ';') {
                 username = popString();
+                return 1;
             }
             else
                 pushByte(nextByte);
         }
+        return 0;
     }
 
     public void encodeNextByte(byte nextByte) {

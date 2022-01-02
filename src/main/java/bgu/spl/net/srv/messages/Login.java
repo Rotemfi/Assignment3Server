@@ -11,8 +11,8 @@ public class Login extends Message {
     private byte Captcha;
     private boolean byteTime=false;
 
-    public Login(int clientId, byte[] arr) {
-        super(clientId, arr);
+    public Login(int clientId) {
+        super(clientId);
     }
 
     public void decodeNextByte(byte nextByte) {

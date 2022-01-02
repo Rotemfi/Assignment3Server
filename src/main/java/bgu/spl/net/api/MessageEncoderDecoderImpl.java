@@ -28,7 +28,7 @@ public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder
         }
         return 0;
     }
-
+//check
     public short bytesToShort(byte[] byteArr)
     {
         short result = (short)((byteArr[0] & 0xff) << 8);

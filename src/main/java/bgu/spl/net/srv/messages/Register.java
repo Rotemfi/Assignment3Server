@@ -17,7 +17,7 @@ public class Register extends Message {
        // clientID = getConnections().addClient(new ConnectionHandler<T>);
     }
 
-    public void decodeNextByte(byte nextByte) {
+    public int decodeNextByte(byte nextByte) {
         if ((char)(nextByte&0xFF) == '\0') {
             if (getCount() == 0)//UserName
                 Username = popString();
@@ -25,8 +25,10 @@ public class Register extends Message {
                 Password = popString();
             else
                 birthday = popString();
+            return 0;
         }
         pushByte(nextByte);
+        return 1;
     }
 
     public void process(){

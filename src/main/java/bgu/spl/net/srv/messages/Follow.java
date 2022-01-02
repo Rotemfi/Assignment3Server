@@ -34,9 +34,9 @@ public class Follow extends Message {
         return 0;
     }
 
-    public void encodeNextByte(byte nextByte) {
-        //
-    }
+//    public void encodeNextByte(byte nextByte) {
+//        //
+//    }
 
     public void process(){
         if(!getDatabase().isUserExist(username) || !getDatabase().isUserExist(clientID))

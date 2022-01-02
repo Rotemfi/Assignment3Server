@@ -27,6 +27,10 @@ public class Logstat extends Message {
         }
     }
 
+    public int decodeNextByte(byte nextByte) {
+        return 1;
+    }
+
     public byte[] encode(String username){
         User user = getDatabase().getUserByUserName(username);
         short ackCode = 10;

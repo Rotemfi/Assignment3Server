@@ -17,11 +17,17 @@ public class Post extends Message {
         super(clientId);
     }
 
-    public void decodeNextByte(byte nextByte) {
+    public int decodeNextByte(byte nextByte) {
         if (nextByte == '\0') {
                 content = popString();
+            for (String word : badWords){
+                if (content.contains(word))
+                    content.replaceAll(word, "<filtered>");
+            }
+                return 1;
         }
         pushByte(nextByte);
+        return 0;
     }
 
     public LinkedList<String> getUsers(){

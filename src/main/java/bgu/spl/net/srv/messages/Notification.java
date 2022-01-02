@@ -1,6 +1,8 @@
 package bgu.spl.net.srv.messages;
 
 
+import bgu.spl.net.srv.User;
+
 public class Notification extends Message {
 
     private byte NotificationType;

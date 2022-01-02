@@ -15,7 +15,7 @@ public class Login extends Message {
         super(clientId);
     }
 
-    public void decodeNextByte(byte nextByte) {
+    public int decodeNextByte(byte nextByte) {
         if ((char)(nextByte&0xFF) == '\0') {
             if (getCount() == 0)//UserName
                 Username = popString();
@@ -25,12 +25,19 @@ public class Login extends Message {
             }
         }
         else {
-            if (byteTime == true)
+            if (byteTime == true) {
                 Captcha = popByte();
+                return 1;
+            }
             else
                 pushByte(nextByte);
         }
+        return 0;
     }
+
+//    public boolean isPasswordMatch(){
+//        //checks if the username matches the password in the database
+//    }
 
     public void process(){
         if(!getDatabase().isUserExist(Username)){

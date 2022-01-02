@@ -2,6 +2,7 @@ package bgu.spl.net.srv.messages;
 
 import bgu.spl.net.api.bidi.ConnectionsImpl;
 import bgu.spl.net.srv.Database;
+import java.util.LinkedList;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -17,6 +18,7 @@ public abstract class Message { //abstract?
   //  protected byte[] msgByteArr;
     private ConnectionsImpl connections;
     private Database database;
+    protected String[] badWords = {"Shit", "Fuck", "War", "Cunt", "Hooker"};
 
     public ConnectionsImpl getConnections() {
         return connections;

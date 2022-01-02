@@ -18,11 +18,13 @@ public class Stat extends Message {
         super(clientId);
     }
 
-    public void decodeNextByte(byte nextByte) {
+    public int decodeNextByte(byte nextByte) {
         if (nextByte == '\0') {
             listOfUsernames = popString();
+            return 1;
         }
         pushByte(nextByte);
+        return 0;
     }
 
     public void process(){

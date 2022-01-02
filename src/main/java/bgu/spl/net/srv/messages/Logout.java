@@ -13,6 +13,9 @@ public class Logout extends Message{
         return logOutSucceeded;
     }
 
+    public int decodeNextByte(byte nextByte) {
+        return 1;
+    }
 
     public void process(){
         if(!getDatabase().isUserExist(clientID))
@@ -20,7 +23,7 @@ public class Logout extends Message{
         else {
             User user = getDatabase().getUserByUserConnectionId(clientID);
             user.setLoggedIn(false);
-            getDatabase().removeUser(clientID);
+            // getDatabase().removeUser(clientID);
             logOutSucceeded=true;
             sendAck((short) 3);
             //delete from all the places necessary (database, connections etc)

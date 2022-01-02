@@ -22,7 +22,7 @@ public class PM extends Message {
         receiverId = user.getConnectionId();
     }
 
-    public void decodeNextByte(byte nextByte) {
+    public int decodeNextByte(byte nextByte) {
         if ((char)(nextByte&0xFF) == '\0')  {
             if (getCount() == 0)//UserName
                 Username = popString();
@@ -30,8 +30,16 @@ public class PM extends Message {
                 content = popString();
             else
                 sending_date_and_time = popString();
+
+            for (String word : badWords){
+                if (content.contains(word))
+                    content.replaceAll(word, "<filtered>");
+            }
+
+            return 0;
         }
         pushByte(nextByte);
+        return 1;
     }
 
     public boolean isUserReceiverRegister(){
@@ -42,10 +50,10 @@ public class PM extends Message {
         return getDatabase().isUserExist(clientID);
     }
 
-    //checks if all conditions OK
-    TO ADD CHECKS FOR BLOCKING
     public void process(){
-        if(isUserReceiverRegister()==false||theSenderFollowReceiver()==false) { //the server should send ERROR
+        if(isUserReceiverRegister()==false||theSenderFollowReceiver()==false
+        || getDatabase().getUserByUserConnectionId(receiverId).getAmBlocking().contains(getDatabase().getUserByUserConnectionId(clientID)))
+        { //the server should send ERROR
             sendError((short) 6);
         }
         else {

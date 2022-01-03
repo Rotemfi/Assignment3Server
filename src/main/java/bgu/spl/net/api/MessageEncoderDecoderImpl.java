@@ -21,6 +21,7 @@ public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder
     private String Username;
     private String Password;
     private String birthday;
+    private String listOfUsernames;
 
     private byte Captcha;
     private boolean byteTime=false;
@@ -45,11 +46,11 @@ public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder
             case 6:
                 return decPM(nextByte);
             case 7:
-                return new decLogstat(nextByte);
+                return (Message) new Logstat();
             case 8:
                 return new decStat(nextByte);
             case 12:
-                return new Block(nextByte);
+                return decBlock(nextByte);
 
         }
     }
@@ -117,6 +118,23 @@ public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder
         return null;
     }
 
+    public Message decBlock(byte nextByte) {
+        if ((char)(nextByte&0xFF) == '\0')  {
+            Username = popString();
+            return (Message) new Block(Username);
+        }
+        pushByte(nextByte);
+        return null;
+    }
+
+    public Message decStat(byte nextByte) {
+        if (nextByte == '\0') {
+             listOfUsernames = popString();
+            return (Message) new Stat(listOfUsernames);;
+        }
+        pushByte(nextByte);
+        return null;
+    }
 
     public String popString() {
         String result = new String(partBytes, 0, len, StandardCharsets.UTF_8);

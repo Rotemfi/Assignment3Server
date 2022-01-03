@@ -14,17 +14,8 @@ public class Stat extends Message {
     private String listOfUsernames;
     private LinkedList<String> actualListOfUsernames;
 
-    public Stat(int clientId) {
-        super(clientId);
-    }
-
-    public int decodeNextByte(byte nextByte) {
-        if (nextByte == '\0') {
-            listOfUsernames = popString();
-            return 1;
-        }
-        pushByte(nextByte);
-        return 0;
+    public Stat(String listOfUsernames){
+        this.listOfUsernames = listOfUsernames;
     }
 
     public void process(int connectionId){

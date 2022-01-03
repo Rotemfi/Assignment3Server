@@ -10,9 +10,7 @@ public class Logstat extends Message {
     private int msgLen = 1<<10;//1KB
     byte[] msgToSend;
 
-    public Logstat(int clientId) {
-        super(clientId);
-    }
+    public Logstat(){};
 
     public void process(int connectionId){
         this.clientID = connectionId;

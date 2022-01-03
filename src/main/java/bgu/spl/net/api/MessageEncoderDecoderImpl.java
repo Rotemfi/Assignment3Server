@@ -21,10 +21,15 @@ public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder
     private String Username;
     private String Password;
     private String birthday;
-    private String listOfUsernames;
+    private byte follow;
 
     private byte Captcha;
     private boolean byteTime=false;
+
+    private String[] badWords = {"Shit", "Fuck", "War", "Cunt", "Hooker"};//Post
+    private String content;//Post
+    private String sending_date_and_time;//PM
+
 
     int registerCount=0;
 
@@ -46,14 +51,15 @@ public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder
             case 6:
                 return decPM(nextByte);
             case 7:
-                return (Message) new Logstat();
+                return new decLogstat(nextByte);
             case 8:
                 return new decStat(nextByte);
             case 12:
-                return decBlock(nextByte);
+                return new Block(nextByte);
 
         }
     }
+    //hi
 
     public void decodeOp(byte b) {
         if (first == false) {
@@ -118,23 +124,55 @@ public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder
         return null;
     }
 
-    public Message decBlock(byte nextByte) {
-        if ((char)(nextByte&0xFF) == '\0')  {
-            Username = popString();
-            return (Message) new Block(Username);
+    public Message decFollow(byte nextByte) {
+        if(first) {
+            follow = popByte();
+            first=false;
+        }
+        else {
+            if ((char) (nextByte & 0xFF) == ';') {
+                Username = popString();
+                return (Message) new Follow(follow,Username);
+            }
+            else
+                pushByte(nextByte);
+        }
+        return null;
+    }
+
+    public Message decPost(byte nextByte) {
+        if (nextByte == '\0') {
+            content = popString();
+            for (String word : badWords){
+                if (content.contains(word))
+                    content.replaceAll(word, "<filtered>");
+            }
+            return (Message) new Post(content);
         }
         pushByte(nextByte);
         return null;
     }
 
-    public Message decStat(byte nextByte) {
-        if (nextByte == '\0') {
-             listOfUsernames = popString();
-            return (Message) new Stat(listOfUsernames);;
+    public Message decPM(byte nextByte) {
+        if ((char)(nextByte&0xFF) == '\0')  {
+            if (registerCount == 0)//UserName
+                Username = popString();
+            if (registerCount == 1)//Password
+                content = popString();
+            else
+                sending_date_and_time = popString();
+
+            for (String word : badWords){
+                if (content.contains(word))
+                    content.replaceAll(word, "<filtered>");
+            }
+
+            return (Message) new PM(Username,content,sending_date_and_time);
         }
         pushByte(nextByte);
         return null;
     }
+
 
     public String popString() {
         String result = new String(partBytes, 0, len, StandardCharsets.UTF_8);

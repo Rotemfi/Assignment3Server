@@ -13,22 +13,10 @@ public class Post extends Message {
     private int msgLen = 1<<10;//1KB
     byte[] msgToSend;
 
-    public Post(int clientId) {
-        super(clientId);
+    public Post(String content) {
+        this.content=content;
     }
 
-    public int decodeNextByte(byte nextByte) {
-        if (nextByte == '\0') {
-                content = popString();
-            for (String word : badWords){
-                if (content.contains(word))
-                    content.replaceAll(word, "<filtered>");
-            }
-                return 1;
-        }
-        pushByte(nextByte);
-        return 0;
-    }
 
     public LinkedList<String> getUsers(){
         LinkedList<String> users = new LinkedList<>();

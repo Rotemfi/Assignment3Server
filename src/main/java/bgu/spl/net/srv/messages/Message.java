@@ -18,8 +18,6 @@ public abstract class Message { //abstract?
   //  protected byte[] msgByteArr;
     private ConnectionsImpl connections;
     private Database database;
-    protected String[] badWords = {"Shit", "Fuck", "War", "Cunt", "Hooker"};
-
     public ConnectionsImpl getConnections() {
         return connections;
     }

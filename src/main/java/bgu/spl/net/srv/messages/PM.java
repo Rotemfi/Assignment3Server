@@ -15,32 +15,16 @@ public class PM extends Message {
     private int msgLen = 1<<10;//1KB
     byte[] msgToSend;
 
-    public PM(int clientId) {
-        super(clientId);
+    public PM(String Username, String content,String sending_date_and_time) {
+        this.Username = Username;
+        this.content = content;
+        this.sending_date_and_time = sending_date_and_time;
         //get the reciverId from the database;
         User user = getDatabase().getUserByUserName(Username);
         receiverId = user.getConnectionId();
     }
 
-    public int decodeNextByte(byte nextByte) {
-        if ((char)(nextByte&0xFF) == '\0')  {
-            if (getCount() == 0)//UserName
-                Username = popString();
-            if (getCount() == 1)//Password
-                content = popString();
-            else
-                sending_date_and_time = popString();
 
-            for (String word : badWords){
-                if (content.contains(word))
-                    content.replaceAll(word, "<filtered>");
-            }
-
-            return 0;
-        }
-        pushByte(nextByte);
-        return 1;
-    }
 
     public boolean isUserReceiverRegister(){
         return getDatabase().isUserExist(receiverId);

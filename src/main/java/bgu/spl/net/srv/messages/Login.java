@@ -41,7 +41,7 @@ public class Login extends Message {
 
     public void process(int connectionId){
         this.clientID = connectionId;
-        if(!getDatabase().isUserExist(Username)){
+        if(!getDatabase().isUserExist(Username) || Captcha == '0') {
             sendError((short) 2);
         }
         else {

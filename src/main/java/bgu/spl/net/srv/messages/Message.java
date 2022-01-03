@@ -112,7 +112,7 @@ public abstract class Message { //abstract?
         getConnections().send(clientID, msg);
     }
 
-    public abstract void process();
+    public abstract void process(int connectionId);
 
     public abstract int decodeNextByte(byte b);
 }

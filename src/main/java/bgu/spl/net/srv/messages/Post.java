@@ -50,7 +50,8 @@ public class Post extends Message {
         return users;
     }
 
-    public void process(){
+    public void process(int connectionId){
+        this.clientID = connectionId;
         if (!(getDatabase().getUserByUserConnectionId(clientID).getLoggedIn()))
                 sendError((short)5);
         else{

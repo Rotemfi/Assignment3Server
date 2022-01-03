@@ -17,7 +17,8 @@ public class Logout extends Message{
         return 1;
     }
 
-    public void process(){
+    public void process(int connectionId){
+        this.clientID = connectionId;
         if(!getDatabase().isUserExist(clientID))
             sendError((short)3);
         else {

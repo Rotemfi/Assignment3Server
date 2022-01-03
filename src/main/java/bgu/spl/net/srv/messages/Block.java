@@ -11,7 +11,8 @@ public class Block extends Message{
         super(clientId);
     }
 
-    public void process(){
+    public void process(int connectionId){
+        this.clientID = connectionId;
         if(!getDatabase().isUserExist(username))
             sendError((short) 12);
         else{

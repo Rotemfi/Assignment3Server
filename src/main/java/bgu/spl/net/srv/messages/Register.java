@@ -31,7 +31,8 @@ public class Register extends Message {
         return 1;
     }
 
-    public void process(){
+    public void process(int connectionId){
+        this.clientID = connectionId;
         //server check if in the database this username is already in use
         //Enter to the database
     }

@@ -22,70 +22,35 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
     private BufferedInputStream in;
     private BufferedOutputStream out;
     private volatile boolean connected = true;
+    private int connectionID;
+    private ConnectionsImpl connections;
 
     public BlockingConnectionHandler(Socket sock, MessageEncoderDecoderImpl<T> reader, BidiMessagingProtocolImpl<Message> protocol) {
         this.sock = sock;
         this.encdec = reader;
         this.protocol = protocol;
+        this.connectionID = ConnectionsImpl.getInstance().getIdByHandler(this);
     }
 
     @Override
     public void run() {
-        try (Socket sock = this.sock) { //just for automatic closing
+        this.protocol.start(this.connectionID, connections);
+        try (Socket sock = this.sock) { // just for automatic closing
             int read;
-            boolean doneOP=false;
-            short OP;
-            Message message = new Register(1);//
-            ConnectionsImpl connections = ConnectionsImpl.getInstance();
-            int clientId = connections.getIdByHandler(this);
 
             in = new BufferedInputStream(sock.getInputStream());
-            out = new BufferedOutputStream(sock.getOutputStream());
 
             while (!protocol.shouldTerminate() && connected && (read = in.read()) >= 0) {
-                if(!doneOP){
-                    OP = encdec.decodeOp((byte) read);
-                    if(OP!=0) {
-                        doneOP = true;
-                        switch (OP){
-                            case 1:
-                                message = new Register(clientId);
-                            case 2:
-                                message = new Login(clientId);
-                            case 3:
-                                message = new Logout(clientId);
-                            case 4:
-                                message = new Follow(clientId);
-                            case 5:
-                                message = new Post(clientId);
-                            case 6:
-                                message = new PM(clientId);
-                            case 7:
-                                message = new Logstat(clientId);
-                            case 8:
-                                message = new Stat(clientId);
-                            case 12:
-                                message = new Block(clientId);
+                T nextMessage = encdec.decodeNextByte((byte) read);
 
-                        }
-                    }
-                }
-                else {
-                    int done = message.decodeNextByte((byte)read);
-                    if (done != 0) {//we decode all the line
-                         protocol.process(message);
-//                        if (response != null)
-//                            out.write(encdec.encode(response));
-//                            out.flush();
-//
-                    }
+                if (nextMessage != null) {
+                    protocol.process(nextMessage);
                 }
             }
 
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-
     }
 
     @Override

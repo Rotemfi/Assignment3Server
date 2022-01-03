@@ -39,7 +39,8 @@ public class Login extends Message {
 //        //checks if the username matches the password in the database
 //    }
 
-    public void process(){
+    public void process(int connectionId){
+        this.clientID = connectionId;
         if(!getDatabase().isUserExist(Username)){
             sendError((short) 2);
         }

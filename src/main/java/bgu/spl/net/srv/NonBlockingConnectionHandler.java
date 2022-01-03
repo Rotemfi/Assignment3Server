@@ -48,45 +48,10 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
             buf.flip();
             return () -> {
                 try {
-                    boolean doneOP=false;
-                    short OP;
-                    Message message = new Register(1);//
-                    ConnectionsImpl connections = ConnectionsImpl.getInstance();
-                    int clientId = connections.getIdByHandler(this);
-
                     while (buf.hasRemaining()) {
-                        if(!doneOP){
-                            OP = encdec.decodeOp(buf.get());
-                            if(OP!=0) {
-                                doneOP = true;
-                                switch (OP){
-                                    case 1:
-                                        message = new Register(clientId);
-                                    case 2:
-                                        message = new Login(clientId);
-                                    case 3:
-                                        message = new Logout(clientId);
-                                    case 4:
-                                        message = new Follow(clientId);
-                                    case 5:
-                                        message = new Post(clientId);
-                                    case 6:
-                                        message = new PM(clientId);
-                                    case 7:
-                                        message = new Logstat(clientId);
-                                    case 8:
-                                        message = new Stat(clientId);
-                                    case 12:
-                                        message = new Block(clientId);
-
-                                }
-                            }
-                        }
-                        else {
-                            int done = message.decodeNextByte(buf.get());
-                            if (done != 0) {//we decode all the line
-                                protocol.process(message);
-                            }
+                        T nextMessage = encdec.decodeNextByte(buf.get());
+                        if (nextMessage != null) {
+                            protocol.process(nextMessage);
                         }
                     }
                 } finally {

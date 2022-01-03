@@ -50,7 +50,8 @@ public class PM extends Message {
         return getDatabase().isUserExist(clientID);
     }
 
-    public void process(){
+    public void process(int connectionId){
+        this.clientID = connectionId;
         if(isUserReceiverRegister()==false||theSenderFollowReceiver()==false
         || getDatabase().getUserByUserConnectionId(receiverId).getAmBlocking().contains(getDatabase().getUserByUserConnectionId(clientID)))
         { //the server should send ERROR

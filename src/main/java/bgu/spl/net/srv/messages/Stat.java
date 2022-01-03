@@ -27,7 +27,8 @@ public class Stat extends Message {
         return 0;
     }
 
-    public void process(){
+    public void process(int connectionId){
+        this.clientID = connectionId;
         createList();
         if (!isUserNameLoggedIn(getDatabase().getUserByUserConnectionId(clientID).getUsername())||
                 !isUserNameRegister(getDatabase().getUserByUserConnectionId(clientID).getUsername()))

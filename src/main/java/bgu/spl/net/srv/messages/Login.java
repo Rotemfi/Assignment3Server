@@ -20,8 +20,9 @@ public class Login extends Message {
 //        //checks if the username matches the password in the database
 //    }
 
-    public void process(){
-        if(!getDatabase().isUserExist(Username)){
+    public void process(int connectionId){
+        this.clientID = connectionId;
+        if(!getDatabase().isUserExist(Username) || Captcha == '0') {
             sendError((short) 2);
         }
         else {

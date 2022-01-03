@@ -39,7 +39,8 @@ public class Follow extends Message {
 //        //
 //    }
 
-    public void process(){
+    public void process(int connectionId){
+        this.clientID = connectionId;
         if(!getDatabase().isUserExist(username) || !getDatabase().isUserExist(clientID))
             sendError((short)4);
         else {

@@ -14,7 +14,8 @@ public class Logstat extends Message {
         super(clientId);
     }
 
-    public void process(){
+    public void process(int connectionId){
+        this.clientID = connectionId;
         if (!isUserNameLoggedIn(getDatabase().getUserByUserConnectionId(clientID).getUsername())||
                 !isUserNameRegister(getDatabase().getUserByUserConnectionId(clientID).getUsername()))
             sendError((short)7);

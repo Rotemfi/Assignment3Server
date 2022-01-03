@@ -13,7 +13,7 @@ public abstract class Message { //abstract?
     private byte[] bytes;
     private int len;
     private byte[] partBytes;
-    private int count=0;
+   // private int count=0;
     protected int clientID;
   //  protected byte[] msgByteArr;
     private ConnectionsImpl connections;
@@ -26,12 +26,12 @@ public abstract class Message { //abstract?
 
     public Database getDatabase() { return database; }
 
-    public Message(int clientId){
+    public Message(){
        // msgByteArr = arr;
        // OP = bytesToShort(arr);
         bytes = new byte[1 << 10]; // 1KB byte array
         len = 0;
-        this.clientID=clientID;
+     //   this.clientID=clientID;
         connections = connections.getInstance();
         database = database.getInstance();
 
@@ -63,7 +63,7 @@ public abstract class Message { //abstract?
     public String popString() {
         String result = new String(partBytes, 0, len, StandardCharsets.UTF_8);
         len = 0;
-        count++;
+     //   count++;
         partBytes = new byte[1 << 10];
         return result;
     }
@@ -71,7 +71,7 @@ public abstract class Message { //abstract?
     public byte popByte(){
         byte result = partBytes[0];
         len=0;
-        count++;
+      //  count++;
         partBytes = new byte[1 << 10];
         return result;
     }
@@ -84,9 +84,9 @@ public abstract class Message { //abstract?
         return bytesArr;
     }
 
-    public int getCount(){
-        return count;
-    }
+//    //public int getCount(){
+//        return count;
+//    }
 
  //   public int getClientID(){
 //        return clientID;
@@ -114,5 +114,4 @@ public abstract class Message { //abstract?
 
     public abstract void process();
 
-    public abstract int decodeNextByte(byte b);
 }

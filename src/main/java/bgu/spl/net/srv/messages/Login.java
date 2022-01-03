@@ -9,30 +9,11 @@ public class Login extends Message {
     private String Username;
     private String Password;
     private byte Captcha;
-    private boolean byteTime=false;
 
-    public Login(int clientId) {
-        super(clientId);
-    }
-
-    public int decodeNextByte(byte nextByte) {
-        if ((char)(nextByte&0xFF) == '\0') {
-            if (getCount() == 0)//UserName
-                Username = popString();
-            if (getCount() == 1) {//Password
-                Password = popString();
-                byteTime = true;
-            }
-        }
-        else {
-            if (byteTime == true) {
-                Captcha = popByte();
-                return 1;
-            }
-            else
-                pushByte(nextByte);
-        }
-        return 0;
+    public Login(String Username,String Password,byte Captcha) {
+        this.Username=Username;
+        this.Password=Password;
+        this.Captcha=Captcha;
     }
 
 //    public boolean isPasswordMatch(){

@@ -12,10 +12,11 @@ public class Follow extends Message {
 
     private byte follow;
     private String username;
-    boolean first=true;
+    boolean firstFollow=true;
 
-    public Follow(int connectionId) {
-        super(connectionId);
+    public Follow(byte follow,String username) {
+        this.follow=follow;
+        this.username=username;
     }
 
     public int decodeNextByte(byte nextByte) {

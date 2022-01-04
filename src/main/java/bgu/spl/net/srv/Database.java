@@ -36,9 +36,9 @@ public class Database {
         return usersByConnectionId.get(connectionId);
     }
 
-    public void addUser(String username){
-        User user = usersByUserName.get(username);
-        usersByUserName.put(username, user);
+    public void addUser(User user){
+        usersByUserName.put(user.getUsername(), user);
+        usersByConnectionId.put(user.getConnectionId(), user);
     }
 
     public void removeUser(int clientId){
@@ -47,10 +47,6 @@ public class Database {
             usersByUserName.remove(user);
             usersByConnectionId.remove(user);
         }
-    }
-
-    public void deleteUser(String username){
-        User user = usersByUserName.remove(username);
     }
 
     public ConcurrentHashMap<String, User> getMapByUserName(){

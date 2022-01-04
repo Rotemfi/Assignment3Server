@@ -16,10 +16,6 @@ public class Login extends Message {
         this.Captcha=Captcha;
     }
 
-//    public boolean isPasswordMatch(){
-//        //checks if the username matches the password in the database
-//    }
-
     public void process(int connectionId){
         this.clientID = connectionId;
         if(!getDatabase().isUserExist(Username) || Captcha == '0') {

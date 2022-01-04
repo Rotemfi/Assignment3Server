@@ -46,8 +46,8 @@ public class Post extends Message {
             LinkedList<User> followersUsers = getDatabase().getUserByUserConnectionId(clientID).getFollowers();
             for (User user : followersUsers) {
                     byte[] byteMsg = encoder();
-                    int connectionId = user.getConnectionId();
-                    getConnections().send(connectionId, byteMsg);
+                    int connectionId1 = user.getConnectionId();
+                    getConnections().send(connectionId1, byteMsg);
             }
             LinkedList<String> taggedUsers = getUsers();
             for (String user : taggedUsers){
@@ -55,10 +55,11 @@ public class Post extends Message {
                 if (!user1.getBlockedBy().contains(getDatabase().getUserByUserConnectionId(clientID))
                         && !user1.getFollowing().contains(getDatabase().getUserByUserConnectionId(clientID))) {
                     byte[] byteMsg = encoder();
-                    int connectionId = user1.getConnectionId();
-                    getConnections().send(connectionId, byteMsg);
+                    int connectionId1 = user1.getConnectionId();
+                    getConnections().send(connectionId1, byteMsg);
                 }
             }
+            sendAck((short)5);
         }
     }
 
@@ -88,11 +89,11 @@ public class Post extends Message {
             return msgToSend;
         }
 
-//    public void pushByte(byte nextByte) {
-//        if (msgLen >= msgToSend.length)
-//            msgToSend = Arrays.copyOf(msgToSend, msgLen * 2);
-//        msgToSend[msgLen] = nextByte;
-//        msgLen++;
-//    }
+    public void pushByte(byte nextByte) {
+        if (msgLen >= msgToSend.length)
+            msgToSend = Arrays.copyOf(msgToSend, msgLen * 2);
+        msgToSend[msgLen] = nextByte;
+        msgLen++;
+    }
 
 }

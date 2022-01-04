@@ -32,6 +32,7 @@ public class Stat extends Message {
                     getConnections().send(clientID, byteMsg);
                 }
             }
+            sendAck((short)8);
         }
     }
 

@@ -19,26 +19,6 @@ public class Follow extends Message {
         this.username=username;
     }
 
-    public int decodeNextByte(byte nextByte) {
-        if(first) {
-            follow = popByte();
-            first=false;
-        }
-        else {
-            if ((char) (nextByte & 0xFF) == ';') {
-                username = popString();
-                return 1;
-            }
-            else
-                pushByte(nextByte);
-        }
-        return 0;
-    }
-
-//    public void encodeNextByte(byte nextByte) {
-//        //
-//    }
-
     public void process(int connectionId){
         this.clientID = connectionId;
         if(!getDatabase().isUserExist(username) || !getDatabase().isUserExist(clientID))
@@ -47,7 +27,7 @@ public class Follow extends Message {
             User followingUser = getDatabase().getUserByUserConnectionId(clientID);
             User userToFollow = getDatabase().getUserByUserName(username);
 
-            if (!followingUser.getLoggedIn()) {
+            if (!followingUser.getLoggedIn() || followingUser.getBlockedBy().contains(userToFollow)) {
                 sendError((short) 4);
             } else {
                 if (follow == (byte) 0) { //FollowAction

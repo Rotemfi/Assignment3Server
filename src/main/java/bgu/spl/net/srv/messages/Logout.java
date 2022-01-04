@@ -12,10 +12,6 @@ public class Logout extends Message{
         return logOutSucceeded;
     }
 
-    public int decodeNextByte(byte nextByte) {
-        return 1;
-    }
-
     public void process(int connectionId){
         this.clientID = connectionId;
         if(!getDatabase().isUserExist(clientID))
@@ -23,11 +19,9 @@ public class Logout extends Message{
         else {
             User user = getDatabase().getUserByUserConnectionId(clientID);
             user.setLoggedIn(false);
-            // getDatabase().removeUser(clientID);
+
             logOutSucceeded=true;
             sendAck((short) 3);
-            //delete from all the places necessary (database, connections etc)
-            //reminder: to kill the thread in thread per client implementation
         }
     }
 }

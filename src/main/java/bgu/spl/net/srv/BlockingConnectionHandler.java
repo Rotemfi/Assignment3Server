@@ -16,8 +16,8 @@ import java.net.Socket;
 
 public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler<T> {
 
-    private final BidiMessagingProtocolImpl<Message> protocol;
-    private final MessageEncoderDecoderImpl<T> encdec;
+    private final BidiMessagingProtocol<T> protocol;
+    private final MessageEncoderDecoder<T> encdec;
     private final Socket sock;
     private BufferedInputStream in;
     private BufferedOutputStream out;
@@ -25,7 +25,7 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
     private int connectionID;
     private ConnectionsImpl connections;
 
-    public BlockingConnectionHandler(Socket sock, MessageEncoderDecoderImpl<T> reader, BidiMessagingProtocolImpl<Message> protocol) {
+    public BlockingConnectionHandler(Socket sock, MessageEncoderDecoder<T> reader, BidiMessagingProtocol<T> protocol) {
         this.sock = sock;
         this.encdec = reader;
         this.protocol = protocol;

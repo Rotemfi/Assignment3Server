@@ -9,13 +9,13 @@ import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-public abstract class Message { //abstract?
+public abstract class Message {
     private byte[] bytes;
     private int len;
     private byte[] partBytes;
-   // private int count=0;
+
     protected int clientID;
-  //  protected byte[] msgByteArr;
+
     private ConnectionsImpl connections;
     private Database database;
     public ConnectionsImpl getConnections() {
@@ -25,11 +25,8 @@ public abstract class Message { //abstract?
     public Database getDatabase() { return database; }
 
     public Message(){
-       // msgByteArr = arr;
-       // OP = bytesToShort(arr);
         bytes = new byte[1 << 10]; // 1KB byte array
         len = 0;
-     //   this.clientID=clientID;
         connections = connections.getInstance();
         database = database.getInstance();
 
@@ -43,13 +40,6 @@ public abstract class Message { //abstract?
         return database.getUserByUserName(username).getLoggedIn();
     }
 
-    public short bytesToShort(byte[] byteArr)
-    {
-        short result = (short)((byteArr[0] & 0xff) << 8);
-        result += (short)(byteArr[1] & 0xff);
-        return result;
-    }
-
 
     public void pushByte(byte nextByte) {
         if (len >= partBytes.length)
@@ -57,6 +47,7 @@ public abstract class Message { //abstract?
         partBytes[len] = nextByte;
         len++;
     }
+
 
     public String popString() {
         String result = new String(partBytes, 0, len, StandardCharsets.UTF_8);
@@ -81,14 +72,6 @@ public abstract class Message { //abstract?
         bytesArr[1] = (byte)(num & 0xFF);
         return bytesArr;
     }
-
-//    //public int getCount(){
-//        return count;
-//    }
-
- //   public int getClientID(){
-//        return clientID;
-//    }
 
     public void sendError(short msgOpCode){
         short OpCode = 11;

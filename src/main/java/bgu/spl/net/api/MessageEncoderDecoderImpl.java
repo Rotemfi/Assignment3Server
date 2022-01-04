@@ -30,6 +30,8 @@ public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder
     private String content;//Post
     private String sending_date_and_time;//PM
 
+    String listOfUsernames;//stat
+
 
     int registerCount=0;
 
@@ -51,13 +53,14 @@ public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder
             case 6:
                 return decPM(nextByte);
             case 7:
-                return new decLogstat(nextByte);
+                return (Message) new Logstat();
             case 8:
-                return new decStat(nextByte);
+                return  decStat(nextByte);
             case 12:
-                return new Block(nextByte);
+                return  decBlock(nextByte);
 
         }
+        return null;
     }
     //hi
 
@@ -172,6 +175,26 @@ public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder
         pushByte(nextByte);
         return null;
     }
+
+    public Message decBlock(byte nextByte) {
+        if ((char)(nextByte&0xFF) == '\0')  {
+            Username = popString();
+            return (Message) new Block(Username);
+        }
+        pushByte(nextByte);
+        return null;
+    }
+
+    public Message decStat(byte nextByte) {
+        if (nextByte == '\0') {
+            listOfUsernames = popString();
+            return (Message) new Stat(listOfUsernames);
+        }
+        pushByte(nextByte);
+        return null;
+    }
+
+
 
 
     public String popString() {

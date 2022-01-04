@@ -20,6 +20,7 @@ public class Block extends Message{
             User toBlock = getDatabase().getUserByUserName(Username);
             thisUser.addToAmBlocking(toBlock);
             thisUser.removeFollowing(toBlock);
+            sendAck((short)12);
         }
     }
 }

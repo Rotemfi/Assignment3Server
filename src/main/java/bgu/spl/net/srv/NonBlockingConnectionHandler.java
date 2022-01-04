@@ -1,6 +1,8 @@
 package bgu.spl.net.srv;
 
+import bgu.spl.net.api.MessageEncoderDecoder;
 import bgu.spl.net.api.MessageEncoderDecoderImpl;
+import bgu.spl.net.api.bidi.BidiMessagingProtocol;
 import bgu.spl.net.api.bidi.BidiMessagingProtocolImpl;
 import bgu.spl.net.api.bidi.ConnectionsImpl;
 import bgu.spl.net.srv.messages.*;
@@ -17,15 +19,15 @@ public class NonBlockingConnectionHandler<T> implements ConnectionHandler<T> {
     private static final int BUFFER_ALLOCATION_SIZE = 1 << 13; //8k
     private static final ConcurrentLinkedQueue<ByteBuffer> BUFFER_POOL = new ConcurrentLinkedQueue<>();
 
-    private final BidiMessagingProtocolImpl<Message> protocol;
-    private final MessageEncoderDecoderImpl<T> encdec;
+    private final BidiMessagingProtocol<T> protocol;
+    private final MessageEncoderDecoder<T> encdec;
     private final Queue<ByteBuffer> writeQueue = new ConcurrentLinkedQueue<>();
     private final SocketChannel chan;
     private final Reactor reactor;
 
     public NonBlockingConnectionHandler(
-            MessageEncoderDecoderImpl<T> reader,
-            BidiMessagingProtocolImpl<Message> protocol,
+            MessageEncoderDecoder<T> reader,
+            BidiMessagingProtocol<T> protocol,
             SocketChannel chan,
             Reactor reactor) {
         this.chan = chan;

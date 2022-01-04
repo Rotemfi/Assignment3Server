@@ -15,14 +15,14 @@ import java.util.function.Supplier;
 public abstract class BaseServer<T> implements Server<T> {
 
     private final int port;
-    private final Supplier<BidiMessagingProtocolImpl<Message>> protocolFactory;
-    private final Supplier<MessageEncoderDecoderImpl<T>> encdecFactory;
+    private final Supplier<BidiMessagingProtocol<T>> protocolFactory;
+    private final Supplier<MessageEncoderDecoder<T>> encdecFactory;
     private ServerSocket sock;
 
     public BaseServer(
             int port,
-            Supplier<BidiMessagingProtocolImpl<Message>> protocolFactory,
-            Supplier<MessageEncoderDecoderImpl<T>> encdecFactory) {
+            Supplier<BidiMessagingProtocol<T>> protocolFactory,
+            Supplier<MessageEncoderDecoder<T>> encdecFactory) {
 
         this.port = port;
         this.protocolFactory = protocolFactory;

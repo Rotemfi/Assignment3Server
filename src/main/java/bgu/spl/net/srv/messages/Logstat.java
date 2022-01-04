@@ -23,11 +23,8 @@ public class Logstat extends Message {
                 byte[] byteMsg = encode(user.getUsername());
                 getConnections().send(clientID, byteMsg);}
             }
+            sendAck((short)7);
         }
-    }
-
-    public int decodeNextByte(byte nextByte) {
-        return 1;
     }
 
     public byte[] encode(String username){

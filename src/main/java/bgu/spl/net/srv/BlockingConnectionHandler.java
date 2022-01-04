@@ -29,12 +29,12 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
         this.sock = sock;
         this.encdec = reader;
         this.protocol = protocol;
-        this.connectionID = ConnectionsImpl.getInstance().getIdByHandler(this);
-        this.protocol.start(connectionID, connections);
+       // this.protocol.start(connectionID, connections);
     }
 
     @Override
     public void run() {
+        this.connectionID = ConnectionsImpl.getInstance().getIdByHandler(this);
         this.protocol.start(this.connectionID, connections);
         try (Socket sock = this.sock) { // just for automatic closing
             int read;

@@ -17,7 +17,6 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<T> {
     @Override
     public void process(T message) { //gets bytes array
         ((Message)message).process(connectionId);
-
         if(message instanceof Logout)
             if(((Logout)message).logoutSucceeded())
                 shouldTerminate = true;
@@ -25,6 +24,6 @@ public class BidiMessagingProtocolImpl<T> implements BidiMessagingProtocol<T> {
 
     @Override
     public boolean shouldTerminate() {
-        return shouldTerminate();
+        return shouldTerminate;
     }
 }

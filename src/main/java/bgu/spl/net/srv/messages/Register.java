@@ -23,11 +23,15 @@ public class Register extends Message {
         this.Username = Username;
         this.Password = Password;
         this.birthday = birthday;
+//        System.out.println("nana:"+Username);
+//        System.out.println("nana2:"+Password);
+//        System.out.println("nana3:"+birthday);
 
        // clientID = getConnections().addClient(new ConnectionHandler<T>);
     }
 
     public void process(int connectionId){
+        System.out.println("SOMEONE CALL REGISTER TO PROCESS");
         this.clientID = connectionId;
         Database database = getDatabase();
         if(database.isUserExist(Username))

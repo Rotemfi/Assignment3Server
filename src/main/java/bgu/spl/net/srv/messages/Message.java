@@ -85,12 +85,14 @@ public abstract class Message {
 
     public void sendAck(short msgOpCode){
         short OpCode = 10;
-        byte[] msg = new byte[4];// = {0,10,0,1}
-        msg[0] = shortToBytes(OpCode)[0];
-        msg[1] = shortToBytes(OpCode)[1];
-        msg[2] = shortToBytes(msgOpCode)[0];
-        msg[3] = shortToBytes(msgOpCode)[1];
+        byte[] msg = {0,10,0,1};
+//        byte[] msg = new byte[4];// = {0,10,0,1}
+//        msg[0] = shortToBytes(OpCode)[0];
+//        msg[1] = shortToBytes(OpCode)[1];
+//        msg[2] = shortToBytes(msgOpCode)[0];
+//        msg[3] = shortToBytes(msgOpCode)[1];
         getConnections().send(clientID, msg);
+        System.out.println("sendAck, print only msg: "+msg);
     }
 
     public abstract void process(int connectionId);

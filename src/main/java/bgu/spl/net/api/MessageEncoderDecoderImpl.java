@@ -13,9 +13,11 @@ public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder
     private byte[] opCode = new byte[2];
     private short OP;
 
+    private int start=1;
+    private int len=0;
+
     private byte[] bytes;
-    private int len;
-    private byte[] partBytes;
+    private byte[] partBytes = new byte[1 << 10];
     protected int clientID;
     private ConnectionsImpl connections;
     private String Username;
@@ -32,14 +34,26 @@ public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder
 
     String listOfUsernames;//stat
 
-
     int registerCount=0;
 
     @Override
     public Message decodeNextByte(byte nextByte) {
+        if(nextByte==(byte) ';'){
+            pushByte(nextByte);
+            popByte();
+
+            registerCount = 0;
+            OP = 0;
+            opCode = new byte[2];
+            first=false;
+            second=false;
+            return null;
+        }
+
         if(!first||!second)
             decodeOp(nextByte);
-        switch (OP){
+
+        switch ((int)OP){
             case 1:
                 return  decRegister(nextByte);
             case 2:
@@ -91,38 +105,51 @@ public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder
     }
 
     public Message decRegister(byte nextByte) {
-        if ((char)(nextByte&0xFF) == '\0') {
-            if (registerCount == 0)//UserName
+        if (nextByte == '\0') {
+            if (registerCount == 0) {//UserName
                 Username = popString();
-            if (registerCount == 1)//Password
+                Username = Username.substring(1);
+                System.out.println("username:"+Username);
+            }
+            else if (registerCount == 1) {//Password
                 Password = popString();
-            else {
+                System.out.println("PASS:"+Password);
+            }
+            else if (registerCount == 2)  {
                 birthday = popString();
+                System.out.println(birthday);
                 registerCount=0;
                 return (Message) new Register(Username,Password,birthday);
             }
         }
-        pushByte(nextByte);
+        else{
+            pushByte(nextByte);
+        }
         return null;
     }
 
 
     public Message decLogin(byte nextByte) {
-        if ((char)(nextByte&0xFF) == '\0') {
-            if (registerCount== 0)//UserName
+        if (nextByte == '\0') {
+            if (registerCount== 0) {//UserName
                 Username = popString();
+                Username = Username.substring(1);
+                System.out.println("Login login: " + Username);
+            }
             if (registerCount == 1) {//Password
                 Password = popString();
+                System.out.println("Password login: " + Password);
                 byteTime = true;
             }
-        }
-        else {
-            if (byteTime == true) {
+            else if (byteTime == true) {
                 Captcha = popByte();
+                System.out.println("Captch login: " + Captcha);
                 return (Message) new Login(Username,Password,Captcha);
             }
-            else
-                pushByte(nextByte);
+
+        }
+        else{
+            pushByte(nextByte);
         }
         return null;
     }
@@ -199,6 +226,7 @@ public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder
 
     public String popString() {
         String result = new String(partBytes, 0, len, StandardCharsets.UTF_8);
+       // start=len;
         len = 0;
         registerCount++;
         partBytes = new byte[1 << 10];
@@ -208,7 +236,7 @@ public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder
     public byte popByte(){
         byte result = partBytes[0];
         len=0;
-        registerCount++;
+     //   registerCount++;
         partBytes = new byte[1 << 10];
         return result;
     }

@@ -5,6 +5,7 @@ import bgu.spl.net.api.MessageEncoderDecoderImpl;
 import bgu.spl.net.api.MessagingProtocol;
 import bgu.spl.net.api.bidi.BidiMessagingProtocol;
 import bgu.spl.net.api.bidi.BidiMessagingProtocolImpl;
+import bgu.spl.net.api.bidi.ConnectionsImpl;
 import bgu.spl.net.srv.messages.Message;
 
 import java.io.IOException;
@@ -18,6 +19,7 @@ public abstract class BaseServer<T> implements Server<T> {
     private final Supplier<BidiMessagingProtocol<T>> protocolFactory;
     private final Supplier<MessageEncoderDecoder<T>> encdecFactory;
     private ServerSocket sock;
+    private ConnectionsImpl connections = ConnectionsImpl.getInstance();
 
     public BaseServer(
             int port,
@@ -46,6 +48,8 @@ public abstract class BaseServer<T> implements Server<T> {
                         clientSock,
                         encdecFactory.get(),
                         protocolFactory.get());
+
+                connections.addClient(handler);
 
                 execute(handler);
             }

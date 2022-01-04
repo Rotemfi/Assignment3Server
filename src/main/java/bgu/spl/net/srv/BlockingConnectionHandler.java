@@ -23,13 +23,14 @@ public class BlockingConnectionHandler<T> implements Runnable, ConnectionHandler
     private BufferedOutputStream out;
     private volatile boolean connected = true;
     private int connectionID;
-    private ConnectionsImpl connections;
+    private ConnectionsImpl connections = ConnectionsImpl.getInstance();
 
     public BlockingConnectionHandler(Socket sock, MessageEncoderDecoder<T> reader, BidiMessagingProtocol<T> protocol) {
         this.sock = sock;
         this.encdec = reader;
         this.protocol = protocol;
         this.connectionID = ConnectionsImpl.getInstance().getIdByHandler(this);
+        this.protocol.start(connectionID, connections);
     }
 
     @Override

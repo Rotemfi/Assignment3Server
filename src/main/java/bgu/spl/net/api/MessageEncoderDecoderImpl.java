@@ -9,12 +9,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder<Message>{
-    private boolean first=false;
-    private boolean second=false;
-    private byte[] opCode = new byte[2];
+   private boolean first=true;
+//    private boolean second=false;
+//    private byte[] opCode = new byte[2];
     private short OP;
     private final ByteBuffer opcode = ByteBuffer.allocate(2); // saves the opcode (type) of message
-    private int start=1;
+//    private int start=1;
     private int len=0;
 
     private byte[] bytes;
@@ -44,13 +44,7 @@ public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder
             if (nextByte == (byte) ';') {
                 pushByte(nextByte);
                 popByte();
-
-                registerCount = 0;
-                OP = 0;
-                opCode = new byte[2];
-                first = false;
-                second = false;
-                return null;
+                initialize();
             }
 
 //            if (!first || !second)
@@ -62,14 +56,16 @@ public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder
                 case 2:
                     return decLogin(nextByte);
                 case 3:
+                    initialize();
                     return (Message) new Logout();
                 case 4:
                     return decFollow(nextByte);
                 case 5:
                     return decPost(nextByte);
-                case 6:
+                case 6: ;
                     return decPM(nextByte);
                 case 7:
+                    initialize();
                     return (Message) new Logstat();
                 case 8:
                     return decStat(nextByte);
@@ -103,12 +99,12 @@ public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder
 //        }
 //    }
 
-    public short bytesToShort(byte[] byteArr)
-    {
-        short result = (short)((byteArr[0] & 0xff) << 8);
-        result += (short)(byteArr[1] & 0xff);
-        return result;
-    }
+//    public short bytesToShort(byte[] byteArr)
+//    {
+//        short result = (short)((byteArr[0] & 0xff) << 8);
+//        result += (short)(byteArr[1] & 0xff);
+//        return result;
+//    }
 
     @Override
     public byte[] encode(Object message) {
@@ -130,6 +126,7 @@ public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder
                 birthday = popString();
                 System.out.println(birthday);
                 registerCount=0;
+                initialize();
                 return (Message) new Register(Username,Password,birthday);
             }
         }
@@ -155,6 +152,7 @@ public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder
             else if (byteTime == true) {
                 Captcha = popByte();
                 System.out.println("Captch login: " + Captcha);
+                initialize();
                 return (Message) new Login(Username,Password,Captcha);
             }
 
@@ -167,12 +165,14 @@ public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder
 
     public Message decFollow(byte nextByte) {
         if(first) {
+            pushByte(nextByte);
             follow = popByte();
             first=false;
         }
         else {
-            if ((char) (nextByte & 0xFF) == ';') {
+            if ((char) (nextByte & 0xFF) == '\0') {
                 Username = popString();
+                initialize();
                 return (Message) new Follow(follow,Username);
             }
             else
@@ -188,6 +188,7 @@ public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder
                 if (content.contains(word))
                     content.replaceAll(word, "<filtered>");
             }
+            initialize();
             return (Message) new Post(content);
         }
         pushByte(nextByte);
@@ -208,6 +209,7 @@ public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder
                     content.replaceAll(word, "<filtered>");
             }
 
+            initialize();
             return (Message) new PM(Username,content,sending_date_and_time);
         }
         pushByte(nextByte);
@@ -217,6 +219,7 @@ public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder
     public Message decBlock(byte nextByte) {
         if ((char)(nextByte&0xFF) == '\0')  {
             Username = popString();
+            initialize();
             return (Message) new Block(Username);
         }
         pushByte(nextByte);
@@ -226,6 +229,7 @@ public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder
     public Message decStat(byte nextByte) {
         if (nextByte == '\0') {
             listOfUsernames = popString();
+            initialize();
             return (Message) new Stat(listOfUsernames);
         }
         pushByte(nextByte);
@@ -265,6 +269,12 @@ public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder
             partBytes = Arrays.copyOf(partBytes, len * 2);
         partBytes[len] = nextByte;
         len++;
+    }
+
+    public void initialize(){
+        opcode.clear();
+        len = 0;
+        registerCount = 0;
     }
 
 }

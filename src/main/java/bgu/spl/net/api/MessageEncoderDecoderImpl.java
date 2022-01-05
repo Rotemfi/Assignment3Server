@@ -4,6 +4,7 @@ package bgu.spl.net.api;
 import bgu.spl.net.api.bidi.ConnectionsImpl;
 import bgu.spl.net.srv.messages.*;
 
+import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
@@ -12,7 +13,7 @@ public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder
     private boolean second=false;
     private byte[] opCode = new byte[2];
     private short OP;
-
+    private final ByteBuffer opcode = ByteBuffer.allocate(2); // saves the opcode (type) of message
     private int start=1;
     private int len=0;
 
@@ -38,60 +39,70 @@ public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder
 
     @Override
     public Message decodeNextByte(byte nextByte) {
-        if(nextByte==(byte) ';'){
-            pushByte(nextByte);
-            popByte();
+        if (!opcode.hasRemaining()) {
 
-            registerCount = 0;
-            OP = 0;
-            opCode = new byte[2];
-            first=false;
-            second=false;
-            return null;
+            if (nextByte == (byte) ';') {
+                pushByte(nextByte);
+                popByte();
+
+                registerCount = 0;
+                OP = 0;
+                opCode = new byte[2];
+                first = false;
+                second = false;
+                return null;
+            }
+
+//            if (!first || !second)
+//                decodeOp(nextByte);
+
+            switch ((int) OP) {
+                case 1:
+                    return decRegister(nextByte);
+                case 2:
+                    return decLogin(nextByte);
+                case 3:
+                    return (Message) new Logout();
+                case 4:
+                    return decFollow(nextByte);
+                case 5:
+                    return decPost(nextByte);
+                case 6:
+                    return decPM(nextByte);
+                case 7:
+                    return (Message) new Logstat();
+                case 8:
+                    return decStat(nextByte);
+                case 12:
+                    return decBlock(nextByte);
+
+            }
         }
 
-        if(!first||!second)
-            decodeOp(nextByte);
-
-        switch ((int)OP){
-            case 1:
-                return  decRegister(nextByte);
-            case 2:
-                return decLogin(nextByte);
-            case 3:
-                return (Message) new Logout();
-            case 4:
-                return decFollow(nextByte);
-            case 5:
-                return decPost(nextByte);
-            case 6:
-                return decPM(nextByte);
-            case 7:
-                return (Message) new Logstat();
-            case 8:
-                return  decStat(nextByte);
-            case 12:
-                return  decBlock(nextByte);
-
+        else {
+            opcode.put(nextByte);
+            if (!opcode.hasRemaining()) { //we read 2 bytes and therefore can take care the specific message
+                opcode.flip();
+                OP = opcode.getShort(); // read the next 2 bytes from position - get the type of message
+            }
         }
         return null;
     }
-    //hi
 
-    public void decodeOp(byte b) {
-        if (first == false) {
-            opCode[0] = b;
-            first = true;
-        } else {
-            if (second == false) {
-                opCode[1] = b;
-                second = true;
-                short ans = bytesToShort(opCode);
-                OP=ans;
-            }
-        }
-    }
-    //check
+//    public void decodeOp(byte b) {
+//        if (first == false) {
+//            opCode[0] = b;
+//            first = true;
+//        } else {
+//            if (second == false) {
+//                opCode[1] = b;
+//                second = true;
+//                short ans = bytesToShort(opCode);
+//                OP=ans;
+//            }
+//        }
+//    }
+
     public short bytesToShort(byte[] byteArr)
     {
         short result = (short)((byteArr[0] & 0xff) << 8);

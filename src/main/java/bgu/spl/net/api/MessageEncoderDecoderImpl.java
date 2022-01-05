@@ -119,7 +119,7 @@ public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder
         if (nextByte == '\0') {
             if (registerCount == 0) {//UserName
                 Username = popString();
-                Username = Username.substring(1);
+ //               Username = Username.substring(1);
                 System.out.println("username:"+Username);
             }
             else if (registerCount == 1) {//Password

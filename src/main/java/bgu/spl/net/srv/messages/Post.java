@@ -10,8 +10,8 @@ import java.util.LinkedList;
 public class Post extends Message {
 
     private String content;
-    private int msgLen = 1<<10;//1KB
-    byte[] msgToSend;
+    private int msgLen = 0;
+    byte[] msgToSend = new byte[1<<5];//1KB
 
     public Post(String content) {
         this.content=content;
@@ -24,13 +24,21 @@ public class Post extends Message {
         char a = content.charAt(i);
         String user = "";
         while (i < content.length()){
-            if (a != '@') // Make sure == works that way
+            if (!Character.toString(a).equals("@")) { // Make sure == works that way
                 i++;
+                if (i != content.length())
+                a = content.charAt(i);
+            }
             else{
-                    while (a != ' '){ // Make sure == works that way
-                        user = user + a;
+                    while (!Character.isWhitespace(a) && i < content.length()-1){ // Make sure == works that way
                         i++;
+                        a = content.charAt(i);
+                        if (!Character.isWhitespace(a))
+                        user = user + a;
                       }
+                    if (i == content.length()-1 && !Character.isWhitespace(content.charAt(i)))
+                        user = user + content.charAt(i);
+
                     users.add(user);
                     user = "";
             }
@@ -45,9 +53,10 @@ public class Post extends Message {
         else{
             LinkedList<User> followersUsers = getDatabase().getUserByUserConnectionId(clientID).getFollowers();
             for (User user : followersUsers) {
-                    byte[] byteMsg = encoder();
+                    byte[] byteMsg = encoder();//holds content
                     int connectionId1 = user.getConnectionId();
                     getConnections().send(connectionId1, byteMsg);
+
             }
             LinkedList<String> taggedUsers = getUsers();
             for (String user : taggedUsers){
@@ -68,6 +77,7 @@ public class Post extends Message {
             User thisClientId = getDatabase().getUserByUserConnectionId(clientID);
             String thisUserName = thisClientId.getUsername();
             byte[] sender_Bytes = thisUserName.getBytes(StandardCharsets.UTF_8);
+            int counter=5;
 
             short opCode = 9;
             byte[] opBytes = shortToBytes(opCode);
@@ -78,15 +88,25 @@ public class Post extends Message {
 
             for(byte b: sender_Bytes){
                 pushByte(b);
+                counter++;
             }
             pushByte((byte)'\0');
 
             for(byte b: contentBytes){
                 pushByte(b);
+                counter++;
             }
             pushByte((byte)'\0');
 
-            return msgToSend;
+            byte[] shorterMsg = new byte[counter];
+            for(int i=0;i<counter;i++)
+                shorterMsg[i]=msgToSend[i];
+
+
+//            String s = new String(msgToSend, StandardCharsets.UTF_8);
+//            System.out.println(s);
+
+            return shorterMsg;
         }
 
     public void pushByte(byte nextByte) {

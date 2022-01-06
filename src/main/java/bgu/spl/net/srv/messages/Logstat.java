@@ -8,7 +8,7 @@ import java.util.LinkedList;
 public class Logstat extends Message {
 
     private int msgLen = 1<<10;//1KB
-    byte[] msgToSend;
+    byte[] msgToSend = new byte[msgLen];
 
     public Logstat(){};
 
@@ -23,7 +23,7 @@ public class Logstat extends Message {
                 byte[] byteMsg = encode(user.getUsername());
                 getConnections().send(clientID, byteMsg);}
             }
-            sendAck((short)7);
+            //sendAck((short)7);
         }
     }
 

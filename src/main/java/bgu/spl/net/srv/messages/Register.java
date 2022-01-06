@@ -31,7 +31,7 @@ public class Register extends Message {
     }
 
     public void process(int connectionId){
-        System.out.println("SOMEONE CALL REGISTER TO PROCESS");
+//        System.out.println("SOMEONE CALL REGISTER TO PROCESS");
         this.clientID = connectionId;
         Database database = getDatabase();
         if(database.isUserExist(Username))
@@ -40,7 +40,7 @@ public class Register extends Message {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
             LocalDate localDate = LocalDate.parse(birthday, formatter);
             LocalDate today = LocalDateTime.now().toLocalDate();
-            short age = (short)Period.between(today, localDate).getYears();
+            short age = (short)Period.between(localDate, today).getYears();
             User user = new User(Username,Password,age,connectionId);
             database.addUser(user);
             sendAck((short)1);

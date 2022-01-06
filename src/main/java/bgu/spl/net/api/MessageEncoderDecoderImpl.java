@@ -26,7 +26,7 @@ public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder
     private String birthday;
     private byte follow;
 
-    private byte Captcha;
+    private String Captcha;
     private boolean byteTime=false;
 
     private String[] badWords = {"Shit", "Fuck", "War", "Cunt", "Hooker"};//Post
@@ -40,12 +40,6 @@ public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder
     @Override
     public Message decodeNextByte(byte nextByte) {
         if (!opcode.hasRemaining()) {
-
-            if (nextByte == (byte) ';') {
-                pushByte(nextByte);
-                popByte();
-                initialize();
-            }
 
 //            if (!first || !second)
 //                decodeOp(nextByte);
@@ -112,22 +106,27 @@ public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder
     }
 
     public Message decRegister(byte nextByte) {
+        if (nextByte == (byte) ';') {
+            pushByte(nextByte);
+            popByte();
+            initialize();
+            return (Message) new Register(Username,Password,birthday);
+        }
+
         if (nextByte == '\0') {
             if (registerCount == 0) {//UserName
                 Username = popString();
  //               Username = Username.substring(1);
-                System.out.println("username:"+Username);
+//                System.out.println("username:"+Username);
             }
             else if (registerCount == 1) {//Password
                 Password = popString();
-                System.out.println("PASS:"+Password);
+//                System.out.println("PASS:"+Password);
             }
             else if (registerCount == 2)  {
                 birthday = popString();
-                System.out.println(birthday);
+//                System.out.println(birthday);
                 registerCount=0;
-                initialize();
-                return (Message) new Register(Username,Password,birthday);
             }
         }
         else{
@@ -138,42 +137,50 @@ public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder
 
 
     public Message decLogin(byte nextByte) {
+        if (nextByte == (byte) ';') {
+            pushByte(nextByte);
+            popByte();
+            initialize();
+            return (Message) new Login(Username,Password,Captcha);
+        }
         if (nextByte == '\0') {
             if (registerCount== 0) {//UserName
                 Username = popString();
-                Username = Username.substring(1);
-                System.out.println("Login login: " + Username);
+//                System.out.println("Login login: " + Username);
             }
-            if (registerCount == 1) {//Password
+            else if (registerCount == 1) {//Password
                 Password = popString();
-                System.out.println("Password login: " + Password);
-                byteTime = true;
+//                System.out.println("Password login: " + Password);
             }
-            else if (byteTime == true) {
-                Captcha = popByte();
-                System.out.println("Captch login: " + Captcha);
-                initialize();
-                return (Message) new Login(Username,Password,Captcha);
-            }
-
         }
         else{
+            if (registerCount == 2) {
+                pushByte(nextByte);
+                Captcha = popString();
+//                System.out.println("Captch login: " + Captcha);
+            }
+            else
             pushByte(nextByte);
         }
         return null;
     }
 
     public Message decFollow(byte nextByte) {
+        if (nextByte == (byte) ';') {
+            pushByte(nextByte);
+            popByte();
+            initialize();
+            return (Message) new Follow(follow,Username);
+        }
         if(first) {
             pushByte(nextByte);
             follow = popByte();
             first=false;
         }
         else {
-            if ((char) (nextByte & 0xFF) == '\0') {
+            if (nextByte == '\0') {
                 Username = popString();
-                initialize();
-                return (Message) new Follow(follow,Username);
+
             }
             else
                 pushByte(nextByte);
@@ -182,55 +189,76 @@ public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder
     }
 
     public Message decPost(byte nextByte) {
+        if (nextByte == (byte) ';') {
+            pushByte(nextByte);
+            popByte();
+            initialize();
+            return (Message) new Post(content);
+        }
         if (nextByte == '\0') {
             content = popString();
             for (String word : badWords){
                 if (content.contains(word))
                     content.replaceAll(word, "<filtered>");
             }
-            initialize();
-            return (Message) new Post(content);
         }
         pushByte(nextByte);
         return null;
     }
 
     public Message decPM(byte nextByte) {
-        if ((char)(nextByte&0xFF) == '\0')  {
-            if (registerCount == 0)//UserName
-                Username = popString();
-            if (registerCount == 1)//Password
-                content = popString();
-            else
-                sending_date_and_time = popString();
-
-            for (String word : badWords){
-                if (content.contains(word))
-                    content.replaceAll(word, "<filtered>");
-            }
-
+        if (nextByte == (byte) ';') {
+            pushByte(nextByte);
+            popByte();
             initialize();
             return (Message) new PM(Username,content,sending_date_and_time);
         }
-        pushByte(nextByte);
+        if (nextByte == '\0')  {
+            if (registerCount == 0) {//UserName
+                Username = popString();
+            }
+            else if (registerCount == 1) {//Content
+                content = popString();
+                for (String word : badWords) {
+                    if (content.contains(word))
+                        content = content.replaceAll(word, "<filtered>");
+                }
+            }
+            else if (registerCount == 3)
+                sending_date_and_time = popString();
+
+        }
+        else {
+            pushByte(nextByte);
+        }
         return null;
     }
 
     public Message decBlock(byte nextByte) {
-        if ((char)(nextByte&0xFF) == '\0')  {
-            Username = popString();
+        if (nextByte == (byte) ';') {
+            pushByte(nextByte);
+            popByte();
             initialize();
             return (Message) new Block(Username);
+        }
+        if ((char)(nextByte&0xFF) == '\0')  {
+            Username = popString();
+
         }
         pushByte(nextByte);
         return null;
     }
 
     public Message decStat(byte nextByte) {
-        if (nextByte == '\0') {
-            listOfUsernames = popString();
+        if (nextByte == (byte) ';') {
+            pushByte(nextByte);
+            popByte();
             initialize();
             return (Message) new Stat(listOfUsernames);
+        }
+        if (nextByte == '\0') {
+            listOfUsernames = popString();
+
         }
         pushByte(nextByte);
         return null;
@@ -275,6 +303,7 @@ public class MessageEncoderDecoderImpl<Message> implements MessageEncoderDecoder
         opcode.clear();
         len = 0;
         registerCount = 0;
+        first = true;
     }
 
 }

@@ -8,9 +8,9 @@ import java.security.KeyPair;
 public class Login extends Message {
     private String Username;
     private String Password;
-    private byte Captcha;
+    private String Captcha;
 
-    public Login(String Username,String Password,byte Captcha) {
+    public Login(String Username,String Password,String Captcha) {
         this.Username=Username;
         this.Password=Password;
         this.Captcha=Captcha;
@@ -18,12 +18,12 @@ public class Login extends Message {
 
     public void process(int connectionId){
         this.clientID = connectionId;
-        if(!getDatabase().isUserExist(Username) || Captcha == '0') {
+        if(!getDatabase().isUserExist(Username) || !Captcha.equals("1")) {
             sendError((short) 2);
         }
         else {
             User user = getDatabase().getUserByUserName(Username);
-            if(user.getPassword()!=Password)
+            if(!(user.getPassword()).equals(Password))
                 sendError((short) 2);
             else {
                 user.setLoggedIn(true);

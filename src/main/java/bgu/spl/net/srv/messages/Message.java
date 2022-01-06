@@ -1,7 +1,9 @@
 package bgu.spl.net.srv.messages;
-
 import bgu.spl.net.api.bidi.ConnectionsImpl;
 import bgu.spl.net.srv.Database;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.LinkedList;
 
 import java.nio.ByteBuffer;
@@ -84,15 +86,21 @@ public abstract class Message {
     }
 
     public void sendAck(short msgOpCode){
-        short OpCode = 10;
-        byte[] msg = {0,10,0,1};
+        byte[] msgOp = shortToBytes(msgOpCode);
+        byte[] msg = new byte[4];
+        msg[0]=0;
+        msg[1]=10;
+        msg[2]=0;
+        msg[3]=msgOp[1];
+
+       // byte[] msg = {0,10,0,msgOpCode};
 //        byte[] msg = new byte[4];// = {0,10,0,1}
 //        msg[0] = shortToBytes(OpCode)[0];
 //        msg[1] = shortToBytes(OpCode)[1];
 //        msg[2] = shortToBytes(msgOpCode)[0];
 //        msg[3] = shortToBytes(msgOpCode)[1];
         getConnections().send(clientID, msg);
-        System.out.println("sendAck, print only msg: "+msg);
+//        System.out.println("sendAck, print only msg: "+msg);
     }
 
     public abstract void process(int connectionId);

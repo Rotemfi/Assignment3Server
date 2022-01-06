@@ -9,10 +9,10 @@ import java.util.LinkedList;
 
 public class Stat extends Message {
 
-    private int msgLen = 1<<10;//1KB
-    byte[] msgToSend;
+    private int msgLen = 0;//1KB
+    byte[] msgToSend = new byte[1<<10];
     private String listOfUsernames;
-    private LinkedList<String> actualListOfUsernames;
+    private LinkedList<String> actualListOfUsernames = new LinkedList<>();
 
     public Stat(String listOfUsernames){
         this.listOfUsernames = listOfUsernames;
@@ -32,7 +32,7 @@ public class Stat extends Message {
                     getConnections().send(clientID, byteMsg);
                 }
             }
-            sendAck((short)8);
+//            sendAck((short)8);
         }
     }
 
@@ -72,17 +72,18 @@ public class Stat extends Message {
         }
 
     public void createList(){
+        String username="";
         for (int i = 0; i < listOfUsernames.length(); i++){
             char c = listOfUsernames.charAt(i);
-            String username="";
-            while (c != '|'){
+            if (c != '|'){
                 username = username + c;
-                i++;
-                c = listOfUsernames.charAt(i);
+                if(i == listOfUsernames.length()-1)
+                    actualListOfUsernames.add(username);
             }
-
-            actualListOfUsernames.add(username);
-            i++;
+            else{
+                actualListOfUsernames.add(username);
+                username="";
+            }
         }
     }
 

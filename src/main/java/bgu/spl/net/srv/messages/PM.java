@@ -12,14 +12,13 @@ public class PM extends Message {
     private String content;
     private String sending_date_and_time;
     private int receiverId;
-    private int msgLen = 1<<10;//1KB
-    byte[] msgToSend;
+    private int msgLen = 0;//1KB
+    byte[] msgToSend = new byte[1<<5];
 
     public PM(String Username, String content,String sending_date_and_time) {
         this.Username = Username;
         this.content = content;
         this.sending_date_and_time = sending_date_and_time;
-        //get the reciverId from the database;
         User user = getDatabase().getUserByUserName(Username);
         receiverId = user.getConnectionId();
     }
@@ -47,6 +46,7 @@ public class PM extends Message {
             User receiverUser = getDatabase().getUserByUserConnectionId(receiverId);
             if (receiverUser.getLoggedIn()) {
                 getConnections().send(receiverId, byteMsg);
+                getDatabase().getUserByUserConnectionId(clientID).addMessageSent(byteMsg);
             } else {
                 receiverUser.addToMessages(byteMsg);
             }
@@ -60,25 +60,32 @@ public class PM extends Message {
         User thisClientId = getDatabase().getUserByUserConnectionId(clientID);
         String thisUserName = thisClientId.getUsername();
         byte[] sender_Bytes = thisUserName.getBytes(StandardCharsets.UTF_8);
-
+        int counter=5;
        short opCode = 9;
        byte[] opBytes = shortToBytes(opCode);
        pushByte(opBytes[0]);
        pushByte(opBytes[1]);
 
-       pushByte((byte)0);//PM message
+       pushByte((byte)1);//PM message
 
         for(byte b: sender_Bytes){
             pushByte(b);
+            counter++;
         }
+
         pushByte((byte)'\0');
 
         for(byte b: contentBytes){
             pushByte(b);
+            counter++;
         }
         pushByte((byte)'\0');
 
-        return msgToSend;
+        byte[] shorterMsg = new byte[counter];
+        for(int i=0;i<counter;i++)
+            shorterMsg[i]=msgToSend[i];
+
+        return shorterMsg;
     }
 
     public void pushByte(byte nextByte) {

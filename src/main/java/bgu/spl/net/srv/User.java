@@ -54,7 +54,7 @@ public class User {
         if (!following.contains(user))
             following.add(user);
         if (!user.getFollowers().contains(this))
-            user.addFollowMe(user);
+            user.addFollowMe(this);
     }
 
     public void addToMessages(byte[] msg){
@@ -103,6 +103,9 @@ public class User {
         return (short)following.size();
     }
 
+    public void addMessageSent(byte[] message){
+        messagesSent.add(message);
+    }
 
     public LinkedList<User> getBlockedBy(){
         return blockedBy;

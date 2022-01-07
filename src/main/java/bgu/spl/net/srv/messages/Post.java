@@ -36,8 +36,8 @@ public class Post extends Message {
                         if (!Character.isWhitespace(a))
                         user = user + a;
                       }
-                    if (i == content.length()-1 && !Character.isWhitespace(content.charAt(i)))
-                        user = user + content.charAt(i);
+//                    if (i == content.length()-1 && !Character.isWhitespace(content.charAt(i)))
+//                        user = user + content.charAt(i);
 
                     users.add(user);
                     user = "";
@@ -48,24 +48,34 @@ public class Post extends Message {
 
     public void process(int connectionId){
         this.clientID = connectionId;
-        if (!(getDatabase().getUserByUserConnectionId(clientID).getLoggedIn()))
+
+        if (!(getDatabase().isUserExist(clientID))||
+            !(getDatabase().getUserByUserConnectionId(clientID).getLoggedIn()))
                 sendError((short)5);
         else{
             LinkedList<User> followersUsers = getDatabase().getUserByUserConnectionId(clientID).getFollowers();
             for (User user : followersUsers) {
                     byte[] byteMsg = encoder();//holds content
                     int connectionId1 = user.getConnectionId();
-                    getConnections().send(connectionId1, byteMsg);
+                    if(user.getLoggedIn())
+                         getConnections().send(connectionId1, byteMsg);
+                    else
+                        user.addToMessages(byteMsg);
 
             }
             LinkedList<String> taggedUsers = getUsers();
             for (String user : taggedUsers){
-                User user1 = getDatabase().getUserByUserName(user);
-                if (!user1.getBlockedBy().contains(getDatabase().getUserByUserConnectionId(clientID))
-                        && !user1.getFollowing().contains(getDatabase().getUserByUserConnectionId(clientID))) {
-                    byte[] byteMsg = encoder();
-                    int connectionId1 = user1.getConnectionId();
-                    getConnections().send(connectionId1, byteMsg);
+                if(getDatabase().isUserExist(user)) {
+                    User user1 = getDatabase().getUserByUserName(user);
+                    if (!user1.getBlockedBy().contains(getDatabase().getUserByUserConnectionId(clientID))
+                            && !user1.getFollowing().contains(getDatabase().getUserByUserConnectionId(clientID))) {
+                        byte[] byteMsg = encoder();
+                        int connectionId1 = user1.getConnectionId();
+                        if(user1.getLoggedIn())
+                            getConnections().send(connectionId1, byteMsg);
+                        else
+                            user1.addToMessages(byteMsg);
+                    }
                 }
             }
             sendAck((short)5);

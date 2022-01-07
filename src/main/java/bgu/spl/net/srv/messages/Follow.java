@@ -12,7 +12,7 @@ public class Follow extends Message {
 
     private byte follow;
     private String username;
-    boolean firstFollow=true;
+ //   boolean firstFollow=true;
 
     public Follow(byte follow,String username) {
         this.follow=follow;
@@ -35,7 +35,7 @@ public class Follow extends Message {
                     sendAck((short) 4);
 
                 } else {//UnfollowAction
-                    userToFollow.removeFollowing(followingUser);
+                    followingUser.removeFollowing(userToFollow);
                     sendAck((short) 4);
                 }
             }

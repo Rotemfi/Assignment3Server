@@ -58,7 +58,7 @@ public class User {
     }
 
     public void addToMessages(byte[] msg){
-        addToMessages(msg);
+        notifciationList.add(msg);
     }
 
     public void addToAmBlocking(User user){

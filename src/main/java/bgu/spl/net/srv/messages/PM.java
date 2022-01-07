@@ -42,7 +42,6 @@ public class PM extends Message {
         }
         else {
             byte[] byteMsg = encoder();
-            sendAck((short) 6);
             User receiverUser = getDatabase().getUserByUserConnectionId(receiverId);
             if (receiverUser.getLoggedIn()) {
                 getConnections().send(receiverId, byteMsg);

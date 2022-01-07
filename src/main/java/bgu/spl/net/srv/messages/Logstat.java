@@ -6,9 +6,12 @@ import java.util.Arrays;
 import java.util.LinkedList;
 
 public class Logstat extends Message {
+//
+//    private int msgLen = 1<<10;//1KB
+//    byte[] msgToSend = new byte[msgLen];
 
-    private int msgLen = 1<<10;//1KB
-    byte[] msgToSend = new byte[msgLen];
+    private int msgLen = 0;//1KB
+    byte[] msgToSend = new byte[12];
 
     public Logstat(){};
 
@@ -19,7 +22,8 @@ public class Logstat extends Message {
             sendError((short)7);
         else{
             for (User user : getDatabase().getMapByUserName().values()){
-                if (!user.getBlockedBy().contains(getDatabase().getUserByUserConnectionId(clientID))){
+                if (!user.getBlockedBy().contains(getDatabase().getUserByUserConnectionId(clientID)) &&
+                        !user.getAmBlocking().contains(getDatabase().getUserByUserConnectionId(clientID))){
                 byte[] byteMsg = encode(user.getUsername());
                 getConnections().send(clientID, byteMsg);}
             }
@@ -58,13 +62,14 @@ public class Logstat extends Message {
 
         pushByte(numFollowingBytes[0]);
         pushByte(numFollowingBytes[1]);
+        msgLen=0;
 
         return msgToSend;
     }
 
     public void pushByte(byte nextByte) {
-        if (msgLen >= msgToSend.length)
-            msgToSend = Arrays.copyOf(msgToSend, msgLen * 2);
+//        if (msgLen >= msgToSend.length)
+//            msgToSend = Arrays.copyOf(msgToSend, msgLen * 2);
         msgToSend[msgLen] = nextByte;
         msgLen++;
     }

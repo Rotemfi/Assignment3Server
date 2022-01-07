@@ -10,7 +10,7 @@ import java.util.LinkedList;
 public class Stat extends Message {
 
     private int msgLen = 0;//1KB
-    byte[] msgToSend = new byte[1<<10];
+    byte[] msgToSend = new byte[12];
     private String listOfUsernames;
     private LinkedList<String> actualListOfUsernames = new LinkedList<>();
 
@@ -27,10 +27,13 @@ public class Stat extends Message {
         else{
             for (String user : actualListOfUsernames){
                 User user1 = getDatabase().getUserByUserName(user);
-                if(!user1.getBlockedBy().contains(getDatabase().getUserByUserConnectionId(clientID))) {
+                if(!user1.getBlockedBy().contains(getDatabase().getUserByUserConnectionId(clientID)) &&
+                        !user1.getAmBlocking().contains(getDatabase().getUserByUserConnectionId(clientID))) {
                     byte[] byteMsg = encode(user);
                     getConnections().send(clientID, byteMsg);
                 }
+                else
+                    sendError((short)8);
             }
 //            sendAck((short)8);
         }
@@ -68,7 +71,9 @@ public class Stat extends Message {
             pushByte(numFollowingBytes[0]);
             pushByte(numFollowingBytes[1]);
 
-            return msgToSend;
+            msgLen=0;
+
+        return msgToSend;
         }
 
     public void createList(){
@@ -88,8 +93,8 @@ public class Stat extends Message {
     }
 
     public void pushByte(byte nextByte) {
-        if (msgLen >= msgToSend.length)
-            msgToSend = Arrays.copyOf(msgToSend, msgLen * 2);
+//        if (msgLen >= msgToSend.length)
+//            msgToSend = Arrays.copyOf(msgToSend, msgLen * 2);
         msgToSend[msgLen] = nextByte;
         msgLen++;
     }

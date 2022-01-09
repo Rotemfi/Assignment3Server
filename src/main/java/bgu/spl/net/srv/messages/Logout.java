@@ -7,7 +7,7 @@ public class Logout extends Message{
 
     public Logout() {
     }
-
+//jj
     public boolean logoutSucceeded(){
         return logOutSucceeded;
     }
